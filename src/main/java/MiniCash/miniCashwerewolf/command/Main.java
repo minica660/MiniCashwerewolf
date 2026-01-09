@@ -32,28 +32,22 @@ public class Main implements CommandExecutor {
             plugin.help(player);
             return true;
         }
-
-        //help
         if (args[0].equals("help") && player.hasPermission("minicashwerewolf.commands.help")) {
             plugin.help(player);
             return true;
-        } else if (args[0].equals("reload")) {    //config.ymlリロード
+        } else if (args[0].equals("reload")) {    
             plugin.mreload(player);
             return true;
-        } else if (args[0].equals("start") && player.hasPermission("minicashwerewolf.commands.start")) { //ゲームスタート
-            //ゲームスタート用メソッド呼び出し
-            //役職決定
-            plugin.roleset();   //ランダム役職設定メソッド呼び出し
+        } else if (args[0].equals("start") && player.hasPermission("minicashwerewolf.commands.start")) { 
+            plugin.roleset();  
 
-            //ゲームがすでにスタートしていたら処理を停止
-            if (plugin.getConfig().getBoolean("gamePlaying")){       //ゲーム実行中だったら処理を終了する（エラー防止）
+            if (plugin.getConfig().getBoolean("gamePlaying")){       
 
                 player.sendMessage("§c§l現在進行中の人狼ゲームがあります\nこのコマンドを実行させる場合は/mwgame stop\nと打ちゲームを一度終了させてください");
 
                 return true;
 
             }
-            //人数が等しくなかったら処理を止める
             if (plugin.playercheck()) {
                 player.sendMessage("§c§l設定人数に役職人数が達していないためゲームが開始できません");
                 return true;
@@ -64,37 +58,30 @@ public class Main implements CommandExecutor {
             plugin.giveitem();
 
             return true;
-        }else if (args[0].equals("position") && player.hasPermission("minicashwerewolf.commands.position")) {     //役職人数設定
+        }else if (args[0].equals("position") && player.hasPermission("minicashwerewolf.commands.position")) {     
             if (args.length < 3) {
                 player.sendMessage("§c引数を確認してください");
                 return true;
             }
 
-            //何をしたいかチェック
             String check = args[1];
             if (check.equals("set")){
                 if (args.length == 4) {
                     String positionch = args[2];
-                    //役職人数を設定
+                    
                     String speople = args[3];
                     int people;
                     try {
                         people = Integer.parseInt(speople);
 
                     } catch (NumberFormatException e) {
-                        // 変換に失敗（数字以外の文字が入力された）した場合の処理
-
-                        // ユーザーにエラーメッセージを送信
+                        
                         sender.sendMessage("§c§l" + speople + "§r§cは有効な数字ではありません");
-
-                        // コマンド処理を中断し、終了する
                         return true;
                     }
 
-
-                    //役職名が正しいかのチェック
                     if (plugin.check(positionch)) {
-                        //メソッド呼び出し
+                        
                         String returnmessage = plugin.positionset(positionch, people);
 
                         player.sendMessage(returnmessage);
@@ -125,8 +112,6 @@ public class Main implements CommandExecutor {
 
                 String positionch = args[2];
                 if (plugin.check(positionch)) {
-
-                    //メソッド呼び出し
                     String returnmessage = plugin.positionunset(positionch);
 
                     player.sendMessage(returnmessage);
@@ -139,7 +124,7 @@ public class Main implements CommandExecutor {
 
 
 
-        }else if (args[0].equals("player") && player.hasPermission("minicashwerewolf.commands.player")) {      //手動で自分の役職決定するよう(管理者向け)
+        }else if (args[0].equals("player") && player.hasPermission("minicashwerewolf.commands.player")) {      
 
             if (args.length < 2){
                 player.sendMessage("§4§l管理者用コマンド入力方法を確認してください");
