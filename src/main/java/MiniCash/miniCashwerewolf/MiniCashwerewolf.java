@@ -18,10 +18,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 
 import java.util.*;
@@ -33,8 +38,7 @@ import static MiniCash.miniCashwerewolf.Timer.*;
 
 public final class MiniCashwerewolf extends JavaPlugin {
    public static Plugin plugin;
-    //List
-    public static List<String> checklist = new ArrayList<>();     //役職が設定されているかのチェック用リスト
+    public static List<String> checklist = new ArrayList<>();    
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -43,54 +47,29 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
         saveDefaultConfig();
         FileConfiguration config = getConfig();
-
         plugin = this;
-        //例： config.set("spawnpoint.x",2);
-
-
-        //getConfig().set("gamePlaying",false);
-        //セーブ
-        //saveConfig();
-
-
-
         getServer().getPluginManager().registerEvents(new MyEvent(this),this);
-
-
-        checklist.add("wolf"); //人狼
-        checklist.add("madman"); //狂人
-        checklist.add("knight"); //騎士
-        checklist.add("fortune"); //占い師
-        checklist.add("medium"); //霊媒師
-        checklist.add("villager"); //市民
-        checklist.add("spectator"); //観戦者用
-
-
-
-
+        checklist.add("wolf"); 
+        checklist.add("madman"); 
+        checklist.add("knight"); 
+        checklist.add("fortune"); 
+        checklist.add("medium"); 
+        checklist.add("villager"); 
+        checklist.add("spectator"); 
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-
-        //ゲーム実行状態をfalseに
         getConfig().set("gamePlaying",false);
-        //セーブ
         saveConfig();
     }
-
-
-    //変数
     public FileConfiguration config = getConfig();
     public String startpointworld = getConfig().getString("startpoint.world");
     public int startpointX = getConfig().getInt("startpoint.x");
     public int startpointY = getConfig().getInt("startpoint.y");
     public int startpointZ = getConfig().getInt("startpoint.z");
-
     public int range = getConfig().getInt("range");
-
-    //会議
     public String meetingpointworld = getConfig().getString("meetingpoint.world");
     public int meetingpointX = getConfig().getInt("meetingpoint.x");
     public int meetingpointY = getConfig().getInt("meetingpoint.y");
@@ -101,12 +80,8 @@ public final class MiniCashwerewolf extends JavaPlugin {
         return plugin;
     }
 
-
-
-
-    //Map
     public static Map<UUID,Integer> position = new HashMap<>();
-    public static Map<UUID,Integer> guicheck = new HashMap<>(); //GUIを開いているときのクリックイベントを戻す用
+    public static Map<UUID,Integer> guicheck = new HashMap<>(); 
 
 
 
@@ -136,24 +111,8 @@ public final class MiniCashwerewolf extends JavaPlugin {
         }
 
     }
-
-
-    //役職があるかどうかのチェック
-    //入力された役職名を受け取ります
     public  boolean check(String ps){
         boolean check = false;
-
-//        checklist.clear();
-//        checklist.add("wolf"); //人狼
-//        checklist.add("madman"); //狂人
-//        checklist.add("knight"); //騎士
-//        checklist.add("fortune"); //占い師
-//        checklist.add("medium"); //霊媒師
-//        checklist.add("villager"); //市民
-//        checklist.add("spectator"); //観戦者用
-
-
-        //リストに入っている役職名だったらtrueを返す
         if (checklist.contains(ps)){
 
             check = true;
@@ -163,7 +122,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
     }
 
-    //役職名（日本語）チェック
     public String numberposition(int pposition){
         String japosi = null;
         if (pposition == 1){
@@ -183,13 +141,11 @@ public final class MiniCashwerewolf extends JavaPlugin {
         }
         return japosi;
     }
-
-    //使用役職決定(役職人数設定)
     public String positionset(String positionch,int people){
 
         String returns = "§c§l役職人数エラー";
 
-        //設定しようとしていたら
+        
         if (check(positionch)){
 
             String checktrue = positionch + ".check";
@@ -198,7 +154,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             getConfig().set(checktrue, true);
 
             getConfig().set(pscount,people);
-            //セーブ
+            
             saveConfig();
 
             returns = "§a" + positionch + "の設定人数を§l" + people + "人§r§aに設定しました！";
@@ -208,9 +164,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
         return returns;
 
     }
-
-    //役職設定解除
-    //今後再設定予定
     public String positionunset(String positionch){
             String returns = "§c役職をfalseに出来ませんでした　役職名が正しいか確認してください";
 
@@ -218,7 +171,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             String positioncheck = positionch + ".check";
 
             getConfig().set(positioncheck, false);
-            //セーブ
+            
             saveConfig();
 
             returns = "§a" + positionch + "の設定を§6false§r§aにしました！";
@@ -228,20 +181,13 @@ public final class MiniCashwerewolf extends JavaPlugin {
         return returns;
     }
 
-
-    //コマンド役職決定
-    //処理内容
-    //1:入力された役職名をチェック
-    //2:その役職の設定人数が１人以上かをチェック
-    //3:もし１人以上なら役職を設定
-    //違うなら設定せずエラーメッセージを実行者に送信
     public void playerset(Player player,String positionargs){
 
         UUID id = player.getUniqueId();
 
         if (positionargs.equals("wolf")) {
             if (config.getBoolean("wolf.check") && config.getInt("wolf.count") >= 1) {
-                //プレイヤー役職に人狼番号を設定
+                
                 position.put(id, 1);
                 player.sendMessage("§6役職を§l人狼§r§6に設定しました");
 
@@ -250,7 +196,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             }
         }else if (positionargs.equals("madman")){
             if (config.getBoolean("madman.check") && config.getInt("madman.count") >= 1) {
-                //プレイヤー役職に狂人番号を設定
+                
                 position.put(id, 2);
                 player.sendMessage("§6役職を§l狂人§r§6に設定しました");
 
@@ -259,7 +205,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             }
         }else if (positionargs.equals("knight")){
             if (config.getBoolean("knight.check") && config.getInt("knight.count") >= 1) {
-                //プレイヤー役職に騎士番号を設定
+                
                 position.put(id, 3);
                 player.sendMessage("§6役職を§l騎士§r§6に設定しました");
 
@@ -268,7 +214,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             }
         }else if (positionargs.equals("fortune")){
             if (config.getBoolean("fortune.check") && config.getInt("fortune.count") >= 1) {
-                //プレイヤー役職に占い師番号を設定
+                
                 position.put(id, 4);
                 player.sendMessage("§6役職を§l占い師§r§6に設定しました");
 
@@ -277,7 +223,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             }
         }else if (positionargs.equals("medium")){
             if (config.getBoolean("medium.check") && config.getInt("medium.count") >= 1) {
-                //プレイヤー役職に霊媒師番号を設定
+                
                 position.put(id, 5);
                 player.sendMessage("§6役職を§l霊媒師§r§6に設定しました");
 
@@ -286,7 +232,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             }
         }else if (positionargs.equals("villager")){
             if (config.getBoolean("villager.check") && config.getInt("villager.count") >= 1) {
-                //プレイヤー役職に市民番号を設定
+                
                 position.put(id, 6);
                 player.sendMessage("§6役職を§l市民§r§6に設定しました");
 
@@ -308,12 +254,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
     }
 
-
-    //ランダムな役職設定
     public void roleset(){
-
-
-        //役職設定最大人数を取得
         int wolfcount = getConfig().getInt("wolf.count");
         int madmancount = getConfig().getInt("madman.count");
         int knightcount = getConfig().getInt("knight.count");
@@ -323,8 +264,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
 
         List<String> shufflerole = new ArrayList<>(checklist);
-
-        //その役職を使わない設定になっていたらリストから削除
         if (!config.getBoolean("wolf.check")) {
             shufflerole.remove("wolf");
         }
@@ -348,11 +287,9 @@ public final class MiniCashwerewolf extends JavaPlugin {
         if (!config.getBoolean("villager.check")) {
             shufflerole.remove("villager");
         }
-
-        //観戦者役職はランダム設定役職で入らないため削除   市民は残りの人に振り分けるため削除
         shufflerole.remove("spectator");
 
-        //役職を一旦シャッフル
+  
         Collections.shuffle(shufflerole);
 
 
@@ -368,8 +305,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
             Player player = players.get(i);
             String ro = shufflerole.get(random.nextInt(rolesize));
-
-            //役職がもうないのに参加しようとしているプレイヤーがいればスペクテイターに
             if (wolfcount == 0 && madmancount == 0 && knightcount == 0 && fortunecount == 0 && mediumcount == 0 && villagercount == 0) {
                 position.put(player.getUniqueId(), 100);
             }
@@ -379,7 +314,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
             int role = 0;
             if (ro.equals("wolf")) {
                 role = 1;
-                //役職が増えたらその役職の設定最大人数をー１（設定できないように）
                 wolfcount--;
 
             }else if (ro.equals("madman")) {
@@ -401,9 +335,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
             }
 
             position.put(player.getUniqueId(),role);
-
-
-            //もし役職の設定人数がもう０になっていたらListからその役職を削除
             try {
                 if (wolfcount == 0) {
                     shufflerole.remove("wolf");
@@ -434,29 +365,17 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-    //役職設定人数分プレイヤーがいるかをチェック
-    //いなかったらtrue,いたらfalse　を返します
     public boolean playercheck(){
 
-        //変数
+        
         boolean checkresult = true;
-        int wolfgoukei = 0;   //人狼実際の合計人数チェック
-        int madmangoukei = 0; //狂人合計
-        int knightgoukei = 0; //騎士合計
-        int fortunegoukei = 0; //占い師合計
-        int mediumgoukei = 0; //霊媒師合計
-        int villagergoukei = 0; //村人合計
-        int spectatorgoukei = 0; //観戦者の合計
+        int wolfgoukei = 0;   
+        int madmangoukei = 0; 
+        int knightgoukei = 0; 
+        int fortunegoukei = 0; 
+        int mediumgoukei = 0; 
+        int villagergoukei = 0; 
+        int spectatorgoukei = 0; 
 
         int wocheck = config.getInt("wolf.count");
         int mdmcheck = config.getInt("madman.count");
@@ -465,11 +384,9 @@ public final class MiniCashwerewolf extends JavaPlugin {
         int mdiumcheck = config.getInt("medium.count");
         int vlgrcheck = config.getInt("villager.count");
         int sprcheck = config.getInt("spectator.count");
-        //案2
+        
         for (UUID id : position.keySet()){
             int playercheck = position.get(id);
-
-            //人数確認（役職Mapの値が1だったら人狼合計確認変数の値を+1）
             if (playercheck == 1) {
                 wolfgoukei++;
 
@@ -489,59 +406,46 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
         }
 
-
-        //最終人数確認
-        //人狼(先ほど処理したものを使用)
         if (config.getBoolean("wolf.check")) {
             if (wocheck >= 1 && wolfgoukei == wocheck) {
                 checkresult = false;
             }
-        }    //設定された人狼人数と等しくなかったらリターンtrue
+        }    
 
         if (config.getBoolean("madman.check")) {
             if (mdmcheck >= 1 && madmangoukei == mdmcheck) {
                 checkresult = false;
             }
-        }   //設定された狂人人数と等しくなかったらリターンtrue
+        }   
 
         if (config.getBoolean("knight.check")) {
         if (knicheck >= 1 && knightgoukei == knicheck){
             checkresult = false;
             }
-        }   //設定された騎士人数と等しくなかったらリターンtrue
+        }   
         if (config.getBoolean("fortune.check")) {
         if (ftcheck >= 1 && fortunegoukei == ftcheck){
             checkresult = false;
             }
-        }   //設定された占い師人数と等しくなかったらリターンtrue
+        }   
 
         if (config.getBoolean("medium.check")) {
             if (mdiumcheck >= 1 && mediumgoukei == mdiumcheck) {
                 checkresult = false;
             }
-        }   //設定された霊媒師人数と等しくなかったらリターンtrue
+        } 
 
         if (config.getBoolean("villager.check")) {
             if (vlgrcheck >= 1 && villagergoukei == vlgrcheck) {
                 checkresult = false;
             }
-        }   //設定された市民人数と等しくなかったらリターンtrue
-
-        //観戦者はいらないかも？
-//        if (config.getBoolean("spectator.check")){
-//            if (sprcheck >= 1 && spectatorgoukei == sprcheck) {
-//                checkresult = false;
-//            }
-//
-//        }
+        }   
 
 
         return checkresult;
     }
 
-
-    //変数
-    public static Player wolf; //人狼定義
+    public static Player wolf; 
     public static Player madman;
     public static Player knight;
     public static Player fortune;
@@ -549,35 +453,29 @@ public final class MiniCashwerewolf extends JavaPlugin {
     public static Player villager;
     public static Player spectator;
 
-
-        //役職
         public void player(){
-            int wolfgoukei = 0;   //人狼実際の合計人数チェック
-            int madmangoukei = 0; //狂人合計
-            int knightgoukei = 0; //騎士合計
-            int fortunegoukei = 0; //占い師合計
-            int mediumgoukei = 0; //霊媒師合計
-            int villagergoukei = 0; //村人合計
-            int spectatorgoukei = 0; //観戦者合計
+            int wolfgoukei = 0;   
+            int madmangoukei = 0; 
+            int knightgoukei = 0; 
+            int fortunegoukei = 0; 
+            int mediumgoukei = 0; 
+            int villagergoukei = 0; 
+            int spectatorgoukei = 0; 
 
-            //役職確認
             for (UUID id : position.keySet()){
                 int setpositionplayer = position.get(id);
 
-                //ここからの処理の意味
-                // 例：人狼になりたい人が多すぎなかったら...
-                //人狼決定(役職Mapの値が1かつ、役職の最大人数より今まで処理した人狼の人数より少なければそのプレイヤーの役職を人狼に設定)
                 if (setpositionplayer == 1  && wolfgoukei < config.getInt("wolf.count")){
                     wolf = Bukkit.getPlayer(id);
-                }else if (setpositionplayer == 2 && madmangoukei < config.getInt("madman.count")){  //狂人
+                }else if (setpositionplayer == 2 && madmangoukei < config.getInt("madman.count")){ 
                     madman = Bukkit.getPlayer(id);
-                }else if (setpositionplayer == 3 && knightgoukei < config.getInt("knight.count")){  //騎士
+                }else if (setpositionplayer == 3 && knightgoukei < config.getInt("knight.count")){  
                     knight = Bukkit.getPlayer(id);
-                }else if (setpositionplayer == 4 && fortunegoukei < config.getInt("fortune.count")) { //占い師
+                }else if (setpositionplayer == 4 && fortunegoukei < config.getInt("fortune.count")) {
                     fortune = Bukkit.getPlayer(id);
-                }else if (setpositionplayer == 5 && mediumgoukei < config.getInt("medium.count")) {  //霊媒師
+                }else if (setpositionplayer == 5 && mediumgoukei < config.getInt("medium.count")) {  
                     medium = Bukkit.getPlayer(id);
-                } else if (setpositionplayer == 6 && villagergoukei < config.getInt("villager.count")) { //村人
+                } else if (setpositionplayer == 6 && villagergoukei < config.getInt("villager.count")) { 
                     villager = Bukkit.getPlayer(id);
                 }else if (setpositionplayer == 100 && spectatorgoukei < getConfig().getInt("spectator.count")) {
                     spectator = Bukkit.getPlayer(id);
@@ -588,13 +486,8 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
         }
 
-
-        //アイテム付与
         public void giveitem(){
             NamespacedKey namekey = new NamespacedKey(plugin,"wolfitem");
-
-
-            //人狼
             if (config.getBoolean("wolf.check")) {
 
                 ItemStack wolfitem = new ItemStack(Material.DIAMOND_AXE, 1);
@@ -614,11 +507,10 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 wolfitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "wolf_item");
 
 
-                wolfitem.setItemMeta(wolfitemmeta); //アイテムメタを設定
-                wolf.getInventory().addItem(wolfitem); //アイテム人狼に付与
+                wolfitem.setItemMeta(wolfitemmeta);
+                wolf.getInventory().addItem(wolfitem); 
             }
 
-            //狂人
             if (config.getBoolean("madman.check")) {
 
                 ItemStack madmanitem = new ItemStack(Material.ECHO_SHARD, 1);
@@ -629,12 +521,10 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 madmanitemeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "madman_item");
 
 
-                madmanitem.setItemMeta(madmanitemeta); //アイテムメタを設定
-                madman.getInventory().addItem(madmanitem); //アイテム付与
+                madmanitem.setItemMeta(madmanitemeta);
+                madman.getInventory().addItem(madmanitem); 
 
             }
-
-            //騎士
             if (config.getBoolean("knight.check")) {
 
                 ItemStack knightitem = new ItemStack(Material.SHIELD, 1);
@@ -645,11 +535,9 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 knightitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "knight_item");
 
 
-                knightitem.setItemMeta(knightitemmeta); //アイテムメタを設定
-                knight.getInventory().addItem(knightitem); //アイテム付与
+                knightitem.setItemMeta(knightitemmeta); 
+                knight.getInventory().addItem(knightitem);
             }
-
-            //占い師
             if (config.getBoolean("fortune.check")){
 
                 ItemStack fortuneitem = new ItemStack(Material.AMETHYST_SHARD, 1);
@@ -660,11 +548,10 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 fortuneitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "fortune_item");
 
 
-                fortuneitem.setItemMeta(fortuneitemmeta); //アイテムメタを設定
-                fortune.getInventory().addItem(fortuneitem); //アイテム付与
+                fortuneitem.setItemMeta(fortuneitemmeta); 
+                fortune.getInventory().addItem(fortuneitem); 
             }
 
-            //霊媒師
             if (config.getBoolean("medium.check")){
 
                 ItemStack mediumitem = new ItemStack(Material.NETHER_STAR, 1);
@@ -675,8 +562,8 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 mediumitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "medium_item");
 
 
-                mediumitem.setItemMeta(mediumitemmeta); //アイテムメタを設定
-                medium.getInventory().addItem(mediumitem); //アイテム付与
+                mediumitem.setItemMeta(mediumitemmeta); 
+                medium.getInventory().addItem(mediumitem); 
             }
 
 
@@ -687,7 +574,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
         Player gameplayer;
 
-        //ホワイトリスト関連
         public void whitelistp(){
 
             for (Player player : Bukkit.getOnlinePlayers()){
@@ -695,18 +581,15 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 UUID id = player.getUniqueId();
 
                 int positioncheck = position.getOrDefault(id,0);
-
-                //ここからの処理の意味
-                //ゲームに参加するプレイヤー以外かの確認
                 if (positioncheck >= 1){
                     gameplayer = Bukkit.getPlayer(id);
-                    gameplayer.setWhitelisted(true);     //ホワイトリストに追加
-                }else if (positioncheck == 0){     //参加しないプレイヤーはkick
+                    gameplayer.setWhitelisted(true);    
+                }else if (positioncheck == 0){     
                     player.setWhitelisted(false);
                     player.kick(Component.text("§cゲームが開始されました。ゲーム終了までお待ちください。"));
                 }
 
-                Bukkit.setWhitelist(true);  //ホワイトリスト有効化
+                Bukkit.setWhitelist(true); 
 
             }
 
@@ -716,57 +599,38 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
            public static int wolflistcount = 0;
            public static int villagerlistcount = 0;
-        //ゲームスタート
         public void gstart(Player player){
-
-            //ホワイトリストとkick処理
             whitelistp();
 
             player.sendMessage("§e人狼ゲームを開始させました！");
-
-            //1日目に
             day++;
             Bukkit.broadcastMessage(day + "日目になりました");
 
-
-
-            //スタート時のスポーン
             int stpX = startpointX;
             int stpY = startpointY;
             int stpZ = startpointZ;
 
             World world = Bukkit.getWorld(startpointworld);
             Location location = new Location(world,stpX,stpY,stpZ);
-
-            //テレポート
             for (Player onlineplayer : Bukkit.getOnlinePlayers()) {
                 onlineplayer.teleport(location);
                 onlineplayer.setGameMode(GameMode.ADVENTURE);
             }
 
-
-            //観戦者のみスペクテイターモードに変更(観戦者がいたら...)
             if (getConfig().getBoolean("spectator.check")) {
                 spectator.setGameMode(GameMode.SPECTATOR);
             }
-
-
-            //時間を昼に変更
             world.setTime(1000);
-
-
-
-            //勝利のための
             for (Player onlineplayer : Bukkit.getOnlinePlayers()){
 
                 UUID id  = onlineplayer.getUniqueId();
 
                 int getpotision = position.get(id);
 
-                //人狼だったら＋１（狂人などは人狼認定されないため別）
+       
                 if (getpotision == 1){
                     wolflistcount++;
-                }else if (getpotision >= 3 && getpotision <=6){     //市民陣営の人数の合計をチェック
+                }else if (getpotision >= 3 && getpotision <=6){    
                     villagerlistcount++;
                 }
 
@@ -774,27 +638,16 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
             }
 
-
-
-            //ゲームスタート状態に
             FileConfiguration config = getConfig();
             getConfig().set("gamePlaying",true);
-            //セーブ
+         
             saveConfig();
-
-
-
-
-            //役職ごとのメッセージ
-            //人狼
             if (config.getBoolean("wolf.check")) {
                 wolf.sendMessage("§c§lあなたは人狼になりました");
                 wolf.sendMessage("        §7[§a§l役職説明§r§7]         ");
                 wolf.sendMessage("他陣営に気づかれないよう倒しましょう!");
                 wolf.sendMessage("§lアイテムが配られました");
             }
-
-            //狂人
             if (config.getBoolean("madman.check")) {
                 madman.sendMessage("§4あなたは狂人になりました");
                 madman.sendMessage("        §7[§a§l役職説明§r§7]         ");
@@ -802,8 +655,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 madman.sendMessage("§lアイテムが配られました");
 
             }
-
-            //騎士
             if (config.getBoolean("knight.check")) {
                 knight.sendMessage("§bあなたは騎士になりました");
                 knight.sendMessage("        §7[§a§l役職説明§r§7]         ");
@@ -811,8 +662,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 knight.sendMessage("§lアイテムが配られました");
 
             }
-
-            //占い師
             if (config.getBoolean("fortune.check")){
                 fortune.sendMessage("§bあなたは占い師になりました");
                 fortune.sendMessage("        §7[§a§l役職説明§r§7]         ");
@@ -820,8 +669,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 fortune.sendMessage("§lアイテムが配られました");
 
             }
-
-            //霊媒師
             if (config.getBoolean("medium.check")){
                 medium.sendMessage("§bあなたは霊媒師になりました");
                 medium.sendMessage("        §7[§a§l役職説明§r§7]         ");
@@ -829,17 +676,12 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 medium.sendMessage("§lアイテムが配られました");
 
             }
-
-            //市民
             if (config.getBoolean("villager.check")){
                 villager.sendMessage("§bあなたは市民になりました");
                 villager.sendMessage("        §7[§a§l役職説明§r§7]         ");
                 villager.sendMessage("              逃げろ");
 
             }
-
-
-            //観戦者
             if (config.getBoolean("spectator.check")){
 
                 spectator.sendMessage("§aあなたは観戦者になりました");
@@ -847,19 +689,10 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 spectator.sendMessage("              §kaaaaaa");
             }
 
-
-
-
-
-
-
-            //タイマースタート
             new Timer(this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
                 nowtime = true;
 
         }
-
-        //stopコマンド実装
         public void gstop(Player player){
 
             if (config.getBoolean("gamePlaying")) {
@@ -867,9 +700,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
                 tstop = true;
                 mstop = true;
-
-
-                //オンラインプレイヤー全員にタイトルを表示
                 for (Player onlinep : Bukkit.getOnlinePlayers()) {
                     onlinep.sendTitle("§kaaa§r§e引き分け！！§kaaa§r", "", 10, 70, 20);
                     onlinep.setGameMode(GameMode.SPECTATOR);
@@ -879,60 +709,24 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
                 player.sendMessage("§6§lゲームを停止させました！");
 
-                //ホワイトリスト解除
                 Bukkit.setWhitelist(false);
-
-                //ゲーム実行中をfalseに変更
                 getConfig().set("gamePlaying", false);
-                //セーブ
                 saveConfig();
             }else {
                 player.sendMessage("§c§l現在ゲームが進行中ではありません!\nゲームが進行中のみこのコマンドを実行できます");
             }
         }
 
-
-        //昼と夜の移り変わり
         public void day(){
 
             Bukkit.broadcastMessage("§6昼になりました");
             Bukkit.broadcastMessage("§lマイクをONにして話し合いましょう");
-
-            //タイマースタート
             new Timer(this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
-
-            //オンラインプレイヤー全員にタイトルを表示
             for (Player titleonlinep : Bukkit.getOnlinePlayers()){
                 titleonlinep.sendTitle("§eマイクをONにして話し合いましょう","",10,70,20);
             }
-
-
-            //2日目の昼からは会議場所から初期地点へのスポーン
-//            if (mcheck >= 1 ){
-//                //スタート時のスポーン
-//
-//                int stpX = startpointX;
-//                int stpY = startpointY;
-//                int stpZ = startpointZ;
-//
-//                World world = Bukkit.getWorld(startpointworld);
-//                Location location = new Location(world,stpX,stpY,stpZ);
-//
-//                //テレポート
-//                for (Player onlineplayer : Bukkit.getOnlinePlayers()) {
-//                    onlineplayer.teleport(location);
-//                }
-//            }
-
-
-            //時間を昼に変更
             World world = Bukkit.getWorld(startpointworld);
             world.setTime(1000);
-
-
-
-
-
 
         }
 
@@ -941,38 +735,26 @@ public final class MiniCashwerewolf extends JavaPlugin {
             Bukkit.broadcastMessage("§5夜になりました");
             Bukkit.broadcastMessage("§lマイクをOFFにしてください");
 
-            //タイマースタート
             new Timer(this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
-
-            //オンラインプレイヤー全員にタイトルを表示
             for (Player titleonlinep : Bukkit.getOnlinePlayers()){
                 titleonlinep.sendTitle("§8マイクをOFFにしましょう","",10,70,20);
             }
 
 
-            //時間を夜に変更
-
             World world = Bukkit.getWorld(startpointworld);
             world.setTime(18000);
-
-
-            //人狼に対して
-
 
         }
 
         //会議
         public void meeting(){
 
-            //会議地点へテレポート
             int mtgX = meetingpointX;
             int mtgY = meetingpointY;
             int mtgZ = meetingpointZ;
 
             World world = Bukkit.getWorld(meetingpointworld);
             Location location = new Location(world,mtgX,mtgY,mtgZ);
-
-            //テレポート
             for (Player onlineplayer : Bukkit.getOnlinePlayers()) {
                 onlineplayer.teleport(location);
             }
@@ -980,25 +762,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
             Bukkit.broadcastMessage("§a§l会議が開始されました");
             Bukkit.broadcastMessage("§a残り２０秒で投票が行われます");
             Bukkit.broadcastMessage("§c怪しいと思うプレイヤーに投票してください");
-
-            //Component vmessage = Component.text("MiniCash").color(NamedTextColor.GREEN).clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/say hellotest"));
-            //Bukkit.getServer().sendMessage(vmessage);
-
-            //TextComponent votemessage = null;
-            //プレイヤー通知(クリック可能)
-            //for (Player player : Bukkit.getOnlinePlayers()) {
-            //    votemessage = new TextComponent("§a" + player);
-            //
-             //    player.spigot().sendMessage(votemessage);
-            //}
-
-            //votemessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/say hello"));
-
-
-            //タイマー
             new MeetingTimer(this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
-
-
 
         }
         int addmeetingvotecheckmap;
@@ -1011,69 +775,48 @@ public final class MiniCashwerewolf extends JavaPlugin {
         Bukkit.broadcastMessage("§a時間内に投票を行いましょう");
         Bukkit.broadcastMessage("§c怪しいと思うプレイヤーに投票してください");
 
-
         Inventory voteGUI = Bukkit.createInventory(new VoteGuiHolder(),27,"プレイヤー投票");  //サイズ9*○○
 
-        int count = 0; //GUIに設置した数カウント用
+        int count = 0; 
         int onlinecount = Bukkit.getOnlinePlayers().size();
         for (Player player: Bukkit.getOnlinePlayers()){
             if (count <= onlinecount) {
                 ItemStack playerhead = new ItemStack(Material.PLAYER_HEAD);
                 SkullMeta phskullmeta = (SkullMeta) playerhead.getItemMeta();
-
                 phskullmeta.setOwningPlayer(player);
-
-                phskullmeta.setDisplayName(player.getName());    //現在処理中のプレイヤー名を入手しそのプレイヤー名を頭にセット
+                phskullmeta.setDisplayName(player.getName());  
                 phskullmeta.setLore(List.of("§6クリックで" + player.getName() + "に投票"));
 
-                playerhead.setItemMeta(phskullmeta); //アイテムメタを設定
-
-                //今のアイテムをスロットに設定
+                playerhead.setItemMeta(phskullmeta); 
                 voteGUI.setItem(count,playerhead);
-
-                //処理した数を次のために１＋
                 count++;
-
-
-                //Map
                 UUID id = player.getUniqueId();
-                guicheck.put(id,1);  //イベントリセット
+                guicheck.put(id,1); 
             }
 
             ItemStack cancelvote= new ItemStack(Material.REDSTONE);
             ItemMeta cancelitem = cancelvote.getItemMeta();
-
             cancelitem.setDisplayName("§c投票をキャンセル");
-
             cancelvote.setItemMeta(cancelitem);
-
-            //スロットに設置
             voteGUI.setItem(26,cancelvote);
 
 
         }
 
-        //プレイヤーにGUI表示
         for (Player py:Bukkit.getOnlinePlayers()){
-            //全プレイヤーに投票用GUI表示
             py.sendMessage("投票用GUIOpenまで到達したよ！");
             py.openInventory(voteGUI);
         }
     }
 
         private Map<String,Integer> meetingvotecheck = new HashMap<>();
-        //会議投票クリックの処理
         public String votego(String nameVote){
-
-            //Mapにプレイヤーごと..＋＋
             addmeetingvotecheckmap = meetingvotecheck.getOrDefault(nameVote,0);
 
             Bukkit.broadcastMessage("現在：" + addmeetingvotecheckmap);
 
             addmeetingvotecheckmap++;
             meetingvotecheck.put(nameVote,addmeetingvotecheckmap);
-
-            //return文
             String retrunstring = "§e" + nameVote + "§r§7に投票しました";
             return retrunstring;
 
@@ -1088,24 +831,18 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
                 String name = entry.getKey();
                 int valuecount = entry.getValue();
-                //現在のmaxvalueより大きいものが見つかった場合
                 if (valuecount > maxvalue){
                     maxvalue = valuecount;
                     maxname = name;
 
                 }
             }
-
-            //投票数が一番多いプレイヤーをキル
             if (maxname != null) {
 
                 Player targetplayer = Bukkit.getPlayer(maxname);
                 if (targetplayer != null) {
-                    //キル
                     targetplayer.setHealth(0.0);
-                    //スペクテイターモードに
                     targetplayer.setGameMode(GameMode.SPECTATOR);
-                    //通リ
                     Bukkit.broadcastMessage("§e" + targetplayer.getName() + "§r§cは投票によって追放されました");
                 }
             }else {
@@ -1119,14 +856,10 @@ public final class MiniCashwerewolf extends JavaPlugin {
             }
 
         }
-
-    //人狼陣営勝利のストップ
     public void wolfwin(){
 
         tstop = true;
         mstop = true;
-
-        //オンラインプレイヤー全員にタイトルを表示
         for (Player onlinep : Bukkit.getOnlinePlayers()){
             onlinep.sendTitle("§4§l人狼陣営の勝利！！","§8市民陣営の敗北...",10,70,20);
             onlinep.setGameMode(GameMode.SPECTATOR);
@@ -1146,30 +879,18 @@ public final class MiniCashwerewolf extends JavaPlugin {
         }
 
         Bukkit.getLogger().info("[§aMiniCashwerewolf§r] §l人狼側の勝利！\nゲームが終了しました");
-
-
-        //ホワイトリスト解除
         Bukkit.setWhitelist(false);
-
         Bukkit.getLogger().info("[§aMiniCashwerewolf§r] §lホワイトリストをoffにしました");
-
-
-        //ゲーム実行中をfalseに変更
         getConfig().set("gamePlaying",false);
-        //セーブ
         saveConfig();
-
         Bukkit.getLogger().info("[§aMiniCashwerewolf§r] §lゲーム終了処理がすべて完了しました");
 
     }
 
-    //人狼陣営勝利のストップ
     public void villagerwin(){
 
         tstop = true;
         mstop = true;
-
-        //オンラインプレイヤー全員にタイトルを表示
         for (Player onlinep : Bukkit.getOnlinePlayers()){
             onlinep.sendTitle("§5§l市民陣営の勝利！！","§8人狼陣営の敗北...",10,70,20);
             onlinep.setGameMode(GameMode.SPECTATOR);
@@ -1187,27 +908,14 @@ public final class MiniCashwerewolf extends JavaPlugin {
             onlinep.sendMessage("§e§nゲーム終了！！");
             onlinep.sendMessage("§e§nゲーム終了！！");
         }
-
-        //ホワイトリスト解除
         Bukkit.setWhitelist(false);
-
-        //ゲーム実行中をfalseに変更
         getConfig().set("gamePlaying",false);
-        //セーブ
         saveConfig();
     }
-
-
-
-
-
-
-    //アイテム(コマンドでの入手用)
         public void givecommanditem(Player player,String itemn){
 
 
             NamespacedKey namekey = new NamespacedKey(plugin,"wolfitem");
-        //人狼
             if (itemn.equals("wolf")){
 
                 ItemStack wolfitem = new ItemStack(Material.DIAMOND_AXE, 1);
@@ -1226,14 +934,12 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 wolfitemmeta.setLore(List.of("§6右クリックで使用可能"));
                 wolfitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING,"wolf_item");
 
-                wolfitem.setItemMeta(wolfitemmeta); //アイテムメタを設定
-                player.getInventory().addItem(wolfitem); //アイテム付与
+                wolfitem.setItemMeta(wolfitemmeta); 
+                player.getInventory().addItem(wolfitem); 
 
                 player.sendMessage("§4" + player.getName() + "に「人狼の斧」を付与しました");
 
             }
-
-            //狂人
             if (itemn.equals("madman")) {
                 ItemStack madmanitem = new ItemStack(Material.ECHO_SHARD, 1);
 
@@ -1243,14 +949,13 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 madmanitemeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "madman_item");
 
 
-                madmanitem.setItemMeta(madmanitemeta); //アイテムメタを設定
-                player.getInventory().addItem(madmanitem); //アイテム人狼に付与
+                madmanitem.setItemMeta(madmanitemeta); 
+                player.getInventory().addItem(madmanitem); 
 
                 player.sendMessage("§4" + player.getName() + "に「味方を探せ！」を付与しました");
 
             }
 
-            //騎士
             if (itemn.equals("knight")){
                 ItemStack knightitem = new ItemStack(Material.SHIELD, 1);
 
@@ -1260,13 +965,11 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 knightitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "knight_item");
 
 
-                knightitem.setItemMeta(knightitemmeta); //アイテムメタを設定
-                player.getInventory().addItem(knightitem); //アイテム付与
+                knightitem.setItemMeta(knightitemmeta); 
+                player.getInventory().addItem(knightitem); 
 
                 player.sendMessage("§4" + player.getName() + "に「守りの盾」を付与しました");
             }
-
-            //占い師
             if (itemn.equals("fortunecheck")){
 
                 ItemStack fortuneitem = new ItemStack(Material.AMETHYST_SHARD, 1);
@@ -1277,13 +980,12 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 fortuneitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "fortune_item");
 
 
-                fortuneitem.setItemMeta(fortuneitemmeta); //アイテムメタを設定
-                player.getInventory().addItem(fortuneitem); //アイテム付与
+                fortuneitem.setItemMeta(fortuneitemmeta); 
+                player.getInventory().addItem(fortuneitem); 
 
                 player.sendMessage("§4" + player.getName() + "に「占い」を付与しました");
             }
 
-            //霊媒師
             if (itemn.equals("mediumcheck")){
 
                 ItemStack mediumitem = new ItemStack(Material.NETHER_STAR, 1);
@@ -1294,8 +996,8 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 mediumitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "medium_item");
 
 
-                mediumitem.setItemMeta(mediumitemmeta); //アイテムメタを設定
-                player.getInventory().addItem(mediumitem); //アイテム付与
+                mediumitem.setItemMeta(mediumitemmeta);
+                player.getInventory().addItem(mediumitem); 
 
                 player.sendMessage("§4" + player.getName() + "に「霊媒師のアイテム」を付与しました");
             }
@@ -1315,24 +1017,37 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
 
             if (itemn.equals("coin")) {
-                //コイン
                 ItemStack coin = new ItemStack(Material.GOLD_INGOT);
                 ItemMeta spawngolditemmeta = coin.getItemMeta();
                 spawngolditemmeta.setDisplayName("§6コイン");
                 spawngolditemmeta.setLore(List.of("§a人狼ゲーム専用コイン"));
                 spawngolditemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "spawn_gold_ingot");
-                coin.setItemMeta(spawngolditemmeta); //アイテムメタを設定
+                coin.setItemMeta(spawngolditemmeta); 
 
 
                 player.getInventory().addItem(coin);
 
                 player.sendMessage("§4" + player.getName() + "に「コイン」を付与しました");
+            }else if (itemn.equals("glow")){
+                ItemStack glowitem = createItem("glowing",1);
+
+
+                player.getInventory().addItem(glowitem);
+
+                player.sendMessage("§4" + player.getName() + "に「全員発光」を付与しました");
+
+            }else if (itemn.equals("speed")){
+
+                ItemStack speedpotion = createItem("speed",1);
+
+                player.getInventory().addItem(speedpotion);
+
+                player.sendMessage("§4" + player.getName() + "に「俊敏のスプラッシュポーション」を付与しました");
+
             }
 
         }
 
-
-        //村人スポーン
         public void villagerspawn(Player player,World world,Location location){
             NamespacedKey namekey = new NamespacedKey(plugin,"villagergui");
             String vid = "villager";
@@ -1345,10 +1060,10 @@ public final class MiniCashwerewolf extends JavaPlugin {
                     vid
             );
 
-            villager.setAI(false);        // 動かない
-            villager.setInvulnerable(true); // 無敵
-            villager.setCollidable(false);  // 押されない
-            villager.setSilent(true);       // 音を出さない
+            villager.setAI(false);        
+            villager.setInvulnerable(true); 
+            villager.setCollidable(false);  
+            villager.setSilent(true);       
             villager.setProfession(Villager.Profession.NONE);
 
 
@@ -1360,42 +1075,51 @@ public final class MiniCashwerewolf extends JavaPlugin {
             if ("villager".equals(id)){
 
                 List<MerchantRecipe> recipes = new ArrayList<>();
-
-                //販売アイテム
                 ItemStack nitem1 = new ItemStack(Material.COOKED_BEEF, 2);
                 ItemStack diamondsword = new ItemStack(Material.DIAMOND_SWORD, 1);
 
                 MerchantRecipe recipe = new MerchantRecipe(
-                        new ItemStack(nitem1), //品物
-                        9999 // 使用回数（実質無限）
+                        new ItemStack(nitem1),
+                        9999
                 );
                 MerchantRecipe recipe2 = new MerchantRecipe(
                         new ItemStack(createItem("pcheck",1)), //品物
-                        9999 // 使用回数（実質無限）
+                        9999 
                 );
                 MerchantRecipe recipe3 = new MerchantRecipe(
                         new ItemStack(diamondsword), //品物
-                        9999 // 使用回数（実質無限）
+                        9999 
                 );
-
+                MerchantRecipe recipe4 = new MerchantRecipe(
+                        new ItemStack(createItem("glowing",1)), //品物
+                        9999 
+                );
+                MerchantRecipe recipe5 = new MerchantRecipe(
+                        new ItemStack(createItem("speed",1)), //品物
+                        9999 
+                );
+                MerchantRecipe recipe6 = new MerchantRecipe(
+                        new ItemStack(createItem("invisibility",1)), //品物
+                        9999 
+                );
                 ItemStack cost4 = createItem("coin",4);
                 ItemStack cost6 = createItem("coin",6);
                 ItemStack cost10 = createItem("coin",10);
+                ItemStack cost15 = createItem("coin",15);
 
-
-
-//                //取引必要アイテムコピー
-//                ItemStack cost1 = spawngolditem.clone();
-//
-//                cost1.setAmount(4);   //コイン必要数4枚の場合
-
-                recipe.addIngredient(new ItemStack(cost4)); // 必要アイテム
+                recipe.addIngredient(new ItemStack(cost4)); 
                 recipe2.addIngredient(new ItemStack(cost10));
                 recipe3.addIngredient(new ItemStack(cost6));
+                recipe4.addIngredient(new ItemStack(cost15));
+                recipe5.addIngredient(new ItemStack(cost6));
+                recipe6.addIngredient(new ItemStack(cost15));
 
                 recipes.add(recipe);
                 recipes.add(recipe2);
                 recipes.add(recipe3);
+                recipes.add(recipe4);
+                recipes.add(recipe5);
+                recipes.add(recipe6);
                 villager.setRecipes(recipes);
 
 
@@ -1422,15 +1146,55 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
                 ritem = coin;
             }else if (item.equals("pcheck")){
-                //残り人数確認の書
+                
                 ItemStack pcheckitem = new ItemStack(Material.LEATHER_HORSE_ARMOR);
                 ItemMeta pcheckitemmeta = pcheckitem.getItemMeta();
                 pcheckitemmeta.setDisplayName("§6残り人数確認の書");
                 pcheckitemmeta.setLore(List.of("§a右クリックで使用可能"));
                 pcheckitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "people_check");
-                pcheckitem.setItemMeta(pcheckitemmeta); //アイテムメタを設定
+                pcheckitem.setItemMeta(pcheckitemmeta); 
 
                 ritem = pcheckitem;
+            } else if (item.equals("glowing")) {
+                ItemStack glowingitem = new ItemStack(Material.GLOW_INK_SAC, amount);
+                ItemMeta glowingitemmeta = glowingitem.getItemMeta();
+                glowingitemmeta.setDisplayName("§e全員発光");
+                glowingitemmeta.setLore(List.of("§a右クリックで使用可能"));
+                glowingitemmeta.getPersistentDataContainer().set(namekey,PersistentDataType.STRING,"glowin_item");
+                glowingitem.setItemMeta(glowingitemmeta);
+
+                ritem = glowingitem;
+
+            }else if (item.equals("speed")) {
+
+
+                ItemStack potion = new ItemStack(Material.SPLASH_POTION);
+                PotionMeta potionmeta = (PotionMeta) potion.getItemMeta();
+                potionmeta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 2, 10),true);
+
+               
+                potionmeta.setDisplayName("§b俊敏のポーション");
+
+               
+                potion.setItemMeta(potionmeta);
+                
+                ritem = potion;
+
+            } else if (item.equals("invisibility")) {
+
+                ItemStack invisibilitypotion = new ItemStack(Material.SPLASH_POTION);
+                PotionMeta potionmeta = (PotionMeta) invisibilitypotion.getItemMeta();
+                potionmeta.addCustomEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 15, 1),true);
+
+
+                potionmeta.setDisplayName("§l透明化のポーション");
+
+
+                invisibilitypotion.setItemMeta(potionmeta);
+
+                ritem = invisibilitypotion;
+
+                
             }
             return ritem;
         }
