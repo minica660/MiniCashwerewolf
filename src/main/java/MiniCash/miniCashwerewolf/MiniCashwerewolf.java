@@ -1110,7 +1110,7 @@ public final class MiniCashwerewolf extends JavaPlugin {
                 recipe.addIngredient(new ItemStack(cost4)); 
                 recipe2.addIngredient(new ItemStack(cost10));
                 recipe3.addIngredient(new ItemStack(cost6));
-                recipe4.addIngredient(new ItemStack(cost15));
+                recipe4.addIngredient(new ItemStack(cost10));
                 recipe5.addIngredient(new ItemStack(cost6));
                 recipe6.addIngredient(new ItemStack(cost15));
 
