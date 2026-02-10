@@ -123,7 +123,6 @@ public class Main implements CommandExecutor {
             }
 
 
-
         }else if (args[0].equals("player") && player.hasPermission("minicashwerewolf.commands.player")) {      
 
             if (args.length < 2){
@@ -160,12 +159,7 @@ public class Main implements CommandExecutor {
                 }
 
                 return true;
-
-
-
-
             }
-
 
             return true;
         }else if (args[0].equals("give") && player.hasPermission("minicashwerewolf.commands.give")){
