@@ -28,6 +28,7 @@ public class Main implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         Player player = (Player) sender;
+        //引数が足りない場合はhelpメソッドを呼び出す
         if (args.length == 0) {
             plugin.help(player);
             return true;
