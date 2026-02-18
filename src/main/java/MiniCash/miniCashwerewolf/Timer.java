@@ -80,8 +80,8 @@ public class Timer extends BukkitRunnable {
                 Random random = new Random();
 
                 World world = Bukkit.getWorld(plugin.startpointworld);
-                int csX = plugin.startpointX + random.nextInt(plugin.range);
-                int csZ = plugin.meetingpointZ + random.nextInt(plugin.range);
+                int csX = plugin.startpointX + (random.nextInt(plugin.range * 2 + 1) - plugin.range);
+                int csZ = plugin.meetingpointZ + (random.nextInt(plugin.range * 2 + 1) - plugin.range);
 
                 int csY = world.getHighestBlockYAt(csX, csZ) + 1;
 
