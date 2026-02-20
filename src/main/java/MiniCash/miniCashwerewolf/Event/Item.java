@@ -18,6 +18,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 
@@ -29,16 +30,23 @@ import java.util.UUID;
 import static MiniCash.miniCashwerewolf.Event.ItemTimer.check;
 import static MiniCash.miniCashwerewolf.MiniCashwerewolf.*;
 import static MiniCash.miniCashwerewolf.Timer.nowtime;
+import static MiniCash.miniCashwerewolf.WolfMain.villagerlistcount;
+import static MiniCash.miniCashwerewolf.WolfMain.wolflistcount;
 
 public class Item {
 
-
+    //人狼アイテム効果
     public static void wolfitem(Player player) {
         //人狼ゲームが夜だったら使用可能に
         if (!nowtime) {
             Location location = player.getLocation();
 
-            
+            //player.getWorld().spawnParticle(Particle.FLASH,location,
+            //        1, //個数
+            //        0.5,0.5,0.5,// 散らばる範囲 (x, y, z のオフセット)
+            //                 0.1,  // 速度 (0だとその場に留まる)
+            //        Color.WHITE
+            //);
 
 
             // プレイヤーの位置
@@ -61,18 +69,25 @@ public class Item {
                     0.1               // 動きの速さ
             );
 
+            //playsound
+            location.getWorld().playSound(location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2.0f, 0.5f);
+            location.getWorld().playSound(location, Sound.ENTITY_WITHER_BREAK_BLOCK, 2.0f, 0.4f);
+            location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1.1f, 0.1f);
 
+
+            //周囲プレイヤーへの効果
 
                 Player me = player;
                 Player target = null;
                 double minDistance = 2.0;
+                double distance = 0;
                 for (Player p : Bukkit.getOnlinePlayers()) {
 
                     if (p.equals(me)) continue;
+                    if (target != null) {
+                        distance = me.getLocation().distance(target.getLocation());
 
-                    double distance = me.getLocation().distance(target.getLocation());
-
-
+                    }
                     if (distance <= minDistance) {
                         minDistance = distance;
                         target = p;
@@ -92,11 +107,10 @@ public class Item {
                 //if (target != null) {
                 //    target.sendMessage("あなたが選ばれました");
 
+            }else {
+                return;
             }
-                //playsound
-                location.getWorld().playSound(location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2.0f, 0.5f);
-                location.getWorld().playSound(location, Sound.ENTITY_WITHER_BREAK_BLOCK, 2.0f, 0.4f);
-                location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1.1f, 0.1f);
+
 
 
 
@@ -113,11 +127,10 @@ public class Item {
 
 
 
- 
+    //狂人専用アイテム
     public static String madmanitem(Player player) {
         String resturnm = "§9味方：§r§l";
-        ItemStack item = player.getInventory().getItemInMainHand();
-        item.setAmount(item.getAmount() - 1);
+
         if (gamePlaying) {
             for (Player p : Bukkit.getOnlinePlayers()){
             UUID id = p.getUniqueId();
@@ -141,7 +154,7 @@ public class Item {
     public static Set<UUID> knightProtectedPlayers = new HashSet<>();
     public static UUID id = null;
     public static Entity target = null;
-    
+    //騎士アイテム
     public static void knightitem(Player player) {
 
 
@@ -184,11 +197,27 @@ public class Item {
         guicheck.put(id,1);  //イベントキャンセル用チェック
 
 
+
+
+//        if (entity != null) {
+//
+//            target = entity;
+//            UUID id = target.getUniqueId();
+//            knightProtectedPlayers.add(id);
+//
+//            if (!check){
+//                //タイマースタート
+//                new ItemTimer().runTaskTimer(getPlugin(), 0L, 20L);
+//                check = true;
+//            }
+//        }else {
+//            getPlugin().getServer().getLogger().info("騎士：周囲にエンティティがいません");
+//        }
     }
 
 
 
-
+    //占い師アイテム
     public static void fortuneitem(Player player){
 
         //GUI関連処理
@@ -220,6 +249,8 @@ public class Item {
             }
 
         }
+
+        //GUIをイベント実行者に開かせる
         player.sendMessage("§9占いたい相手を選んでください");
         player.openInventory(fortuneGUI);
         //Map
@@ -235,6 +266,7 @@ public class Item {
 
 
 
+    //残り人数確認アイテム
     public static int peoplecheck(Player player){
 
         ItemStack item = player.getInventory().getItemInMainHand();
@@ -248,10 +280,9 @@ public class Item {
 
 
 
+    //発光エフェクト
     public static void glowing(Player player){
 
-        ItemStack item = player.getInventory().getItemInMainHand();
-        item.setAmount(item.getAmount() - 1);
 
         for (Player pl : Bukkit.getOnlinePlayers()){
 
@@ -266,9 +297,22 @@ public class Item {
 
     }
 
-    public static void smoke(){
+    //煙幕
+    public static void smoke(Player player){
+        new BukkitRunnable() {
+            int time = 5;  //煙幕時間
+            @Override
+            public void run() {
+                if (time >= 0) {
+                    this.cancel();
+                }
 
+                Location loc = player.getLocation();
+                player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 50, 0.5, 0.5, 0.5, 0.1);
+                time--;
+            }
 
+        }.runTaskTimer(plugin, 0L, 20L);
 
     }
 
@@ -276,3 +320,4 @@ public class Item {
 
 
 }
+
