@@ -308,7 +308,7 @@ public class Item {
                 }
 
                 Location loc = player.getLocation();
-                player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 50, 0.5, 0.5, 0.5, 0.1);
+                player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 80, 4, 2.5, 4, 0);
                 time--;
             }
 
