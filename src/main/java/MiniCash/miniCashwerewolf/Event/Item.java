@@ -199,20 +199,7 @@ public class Item {
 
 
 
-//        if (entity != null) {
-//
-//            target = entity;
-//            UUID id = target.getUniqueId();
-//            knightProtectedPlayers.add(id);
-//
-//            if (!check){
-//                //タイマースタート
-//                new ItemTimer().runTaskTimer(getPlugin(), 0L, 20L);
-//                check = true;
-//            }
-//        }else {
-//            getPlugin().getServer().getLogger().info("騎士：周囲にエンティティがいません");
-//        }
+
     }
 
 
@@ -309,7 +296,11 @@ public class Item {
 
                 Location loc = player.getLocation();
                 player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 1000, 3, 2.5, 3, 0);
-
+                //範囲内のプレイヤーにエフェクト付与
+                loc.getWorld().getNearbyEntities(loc, 3, 3, 3)
+                        .stream()
+                        .filter(entiry -> entiry instanceof Player)
+                        .forEach(pla -> ((Player)pla).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1)));
                 time--;
             }
 
