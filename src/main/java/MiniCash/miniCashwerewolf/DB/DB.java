@@ -1,6 +1,6 @@
 package MiniCash.miniCashwerewolf;
 
-
+import org.bukkit.Bukkit;
 
 import java.sql.*;
 import java.util.logging.Level;
@@ -15,11 +15,9 @@ public class DB {
     }
 
     private Connection connect = null;
-//    private Statement stmt = null;
 
-    //プラグイン起動時に一度だけ呼び出す
     public void connect() throws SQLException {
-        // すでに接続が生きていれば何もしない (3秒以内に応答があるか確認)
+
         if (connect != null && !connect.isClosed() && connect.isValid(3)) {
             return;
         }
@@ -28,11 +26,9 @@ public class DB {
         final String PASS = plugin.getConfig().getString("mysql.password");
 
         try{
-            //db接続
             connect = getConnection(URL, USER, PASS);
             plugin.getLogger().info("データベースへの接続が完了しました");
-//            //ステートメント生成
-//            stmt = connect.createStatement();
+
 
         }catch(Exception e){
 
@@ -43,11 +39,6 @@ public class DB {
 
     }
 
-//    public Connection getconnect() throws SQLException {
-//
-//
-//        return connect;
-//    }
 
     public void closeConnection(){
         try {
@@ -66,11 +57,9 @@ public class DB {
         }
         Statement stmt = null;
         try{
-            //ステートメント生成
+        
             stmt = connect.createStatement();
 
-
-            // プレイヤーの行動ログを保存するテーブル
             String sql = "CREATE TABLE IF NOT EXISTS mlog ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP," // 現在時刻を自動挿入
@@ -97,7 +86,7 @@ public class DB {
 
         String sql = "INSERT INTO mlog (player_name, uuid, content) VALUES (?, ?, ?);";
 
-        // 非同期で実行
+
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 // 接続状態のチェックと復旧
@@ -107,7 +96,6 @@ public class DB {
                     }
                 }
 
-                // try(...) を使うことで、このブロックを抜けた瞬間に自動で Statement が close される
                 try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
                     pstmt.setString(1, playername);
                     pstmt.setString(2, uuid);
