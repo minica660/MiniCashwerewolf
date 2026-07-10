@@ -1,5 +1,5 @@
 name: MiniCashwerewolf
-version: '1.0'
+version: '1.0-SNAPSHOT'
 main: MiniCash.miniCashwerewolf.MiniCashwerewolf
 api-version: '1.21'
 

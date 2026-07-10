@@ -1,11 +1,12 @@
 package MiniCash.miniCashwerewolf;
 
 import MiniCash.miniCashwerewolf.gui.VoteGuiHolder;
+import MiniCash.miniCashwerewolf.timer.MeetingTimer;
+import MiniCash.miniCashwerewolf.timer.Timer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static MiniCash.miniCashwerewolf.Event.MyEvent.players;
-import static MiniCash.miniCashwerewolf.MeetingTimer.mstop;
+import static MiniCash.miniCashwerewolf.Event.Event.players;
+import static MiniCash.miniCashwerewolf.timer.MeetingTimer.mstop;
 import static MiniCash.miniCashwerewolf.MiniCashwerewolf.madman;
 import static MiniCash.miniCashwerewolf.MiniCashwerewolf.*;
-import static MiniCash.miniCashwerewolf.Timer.*;
-import static MiniCash.miniCashwerewolf.Timer.tstop;
+import static MiniCash.miniCashwerewolf.timer.Timer.*;
+import static MiniCash.miniCashwerewolf.timer.Timer.tstop;
 
 public class WolfMain {
     private static MiniCashwerewolf plugin = null;
@@ -37,47 +38,19 @@ public class WolfMain {
 
 
     //アイテム付与
-    public static void giveitem(){
-        NamespacedKey namekey = new NamespacedKey(plugin,"wolfitem");
+    public static void distributionItem(){
 
 
         //人狼
-        if (plugin.getConfig().getBoolean("wolf.check")) {
+        if (RoleManager.activeRole(RoleManager.RoleType.WOLF)) {
 
-            ItemStack wolfitem = new ItemStack(Material.DIAMOND_AXE, 1);
-
-            ItemMeta wolfitemmeta = wolfitem.getItemMeta();
-            wolfitemmeta.setDisplayName("§c人狼の斧");
-            wolfitemmeta.setUnbreakable(true);
-            NamespacedKey keytwo = new NamespacedKey(plugin, "no_damage");
-
-            AttributeModifier modifier = new AttributeModifier(
-                    keytwo,
-                    -100.0,
-                    AttributeModifier.Operation.ADD_NUMBER
-            );
-            wolfitemmeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, modifier);
-            wolfitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            wolfitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "wolf_item");
-
-
-            wolfitem.setItemMeta(wolfitemmeta); //アイテムメタを設定
-            wolf.getInventory().addItem(wolfitem); //アイテム人狼に付与
+            wolf.getInventory().addItem(GameItem.createItem("wolf",1)); //アイテム人狼に付与
         }
 
         //狂人
-        if (plugin.getConfig().getBoolean("madman.check")) {
+        if (RoleManager.activeRole(RoleManager.RoleType.MADMAN)) {
 
-            ItemStack madmanitem = new ItemStack(Material.ECHO_SHARD, 1);
-
-            ItemMeta madmanitemeta = madmanitem.getItemMeta();
-            madmanitemeta.setDisplayName("§c§l味方を探せ！");
-            madmanitemeta.setLore(List.of("§6右クリックで使用可能"));
-            madmanitemeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "madman_item");
-
-
-            madmanitem.setItemMeta(madmanitemeta); //アイテムメタを設定
-            madman.getInventory().addItem(madmanitem); //アイテム付与
+            madman.getInventory().addItem(GameItem.createItem("madman",1)); //アイテム付与
 
         }
 

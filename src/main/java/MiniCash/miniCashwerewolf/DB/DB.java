@@ -1,5 +1,6 @@
-package MiniCash.miniCashwerewolf;
+package MiniCash.miniCashwerewolf.DB;
 
+import MiniCash.miniCashwerewolf.MiniCashwerewolf;
 import org.bukkit.Bukkit;
 
 import java.sql.*;
@@ -15,9 +16,11 @@ public class DB {
     }
 
     private Connection connect = null;
+//    private Statement stmt = null;
 
+    //プラグイン起動時に一度だけ呼び出す
     public void connect() throws SQLException {
-
+        // すでに接続が生きていれば何もしない (3秒以内に応答があるか確認)
         if (connect != null && !connect.isClosed() && connect.isValid(3)) {
             return;
         }
@@ -26,9 +29,11 @@ public class DB {
         final String PASS = plugin.getConfig().getString("mysql.password");
 
         try{
+            //db接続
             connect = getConnection(URL, USER, PASS);
             plugin.getLogger().info("データベースへの接続が完了しました");
-
+//            //ステートメント生成
+//            stmt = connect.createStatement();
 
         }catch(Exception e){
 
@@ -39,6 +44,11 @@ public class DB {
 
     }
 
+//    public Connection getconnect() throws SQLException {
+//
+//
+//        return connect;
+//    }
 
     public void closeConnection(){
         try {
@@ -57,9 +67,11 @@ public class DB {
         }
         Statement stmt = null;
         try{
-        
+            //ステートメント生成
             stmt = connect.createStatement();
 
+
+            // プレイヤーの行動ログを保存するテーブル
             String sql = "CREATE TABLE IF NOT EXISTS mlog ("
                     + "id INT AUTO_INCREMENT PRIMARY KEY,"
                     + "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP," // 現在時刻を自動挿入
@@ -79,6 +91,23 @@ public class DB {
                 plugin.getLogger().severe("データベース ステートメントを閉じる際にエラーが発生しました: " + e.getMessage());
             }
         }
+
+        String sql = "CREATE TABLE IF NOT EXISTS game_data ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                + "time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+                + "player_name VARCHAR(16) NOT NULL,"
+                + "uuid VARCHAR(36) NOT NULL,"
+                + "role VARCHAR(16) NOT NULL"
+                + ");";
+        try(PreparedStatement pstmt = connect.prepareStatement(sql)){
+            // プレイヤーの役職を保存するテーブル
+
+            pstmt.executeUpdate(sql);
+
+        }catch (SQLException e){
+            plugin.getLogger().severe("DBゲーム用プレイヤー役職保存用テーブル生成処理でエラーが発生しました");
+            plugin.getLogger().severe(e.getMessage());
+        }
     }
 
 
@@ -86,7 +115,7 @@ public class DB {
 
         String sql = "INSERT INTO mlog (player_name, uuid, content) VALUES (?, ?, ?);";
 
-
+        // 非同期で実行
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 // 接続状態のチェックと復旧
@@ -96,6 +125,7 @@ public class DB {
                     }
                 }
 
+                // try(...) を使うことで、このブロックを抜けた瞬間に自動で Statement が close される
                 try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
                     pstmt.setString(1, playername);
                     pstmt.setString(2, uuid);
@@ -107,6 +137,44 @@ public class DB {
             }
         });
 
+    }
+
+    //ゲーム用役職データ保存用
+    public void addRoleLog(String playername, String uuid, String role){
+
+        String sql = "INSERT INTO game_data (player_name, uuid, role) VALUES (?, ?, ?);";
+
+        // 非同期で実行
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+
+
+            try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
+
+                    pstmt.setString(1, playername);
+                    pstmt.setString(2, uuid);
+                    pstmt.setString(3, role);
+                    pstmt.executeUpdate();
+
+            }catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "addRoleLogメソッド内データの追加に失敗しました: " + e.getMessage());
+            }
+        });
+
+    }
+
+    //game_dataテーブル内データ削除
+    public void cleanGameDataTABLES(){
+        String sql = "TRUNCATE TABLE game_data;";
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+
+
+            try (PreparedStatement pstmt = connect.prepareStatement(sql)) {
+                pstmt.executeUpdate();
+
+            }catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "cleanGameDataTABLESメソッド内データの追加に失敗しました: " + e.getMessage());
+            }
+        });
     }
 
 

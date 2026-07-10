@@ -1,25 +1,16 @@
 package MiniCash.miniCashwerewolf.Event;
 
-import MiniCash.miniCashwerewolf.MiniCashwerewolf;
-import MiniCash.miniCashwerewolf.Timer;
-import MiniCash.miniCashwerewolf.gui.VoteGuiHolder;
-import MiniCash.miniCashwerewolf.gui.fortuneGuiHolder;
-import MiniCash.miniCashwerewolf.gui.knightGuiHolder;
+import MiniCash.miniCashwerewolf.gui.FortuneGuiHolder;
+import MiniCash.miniCashwerewolf.gui.KnightGuiHolder;
 import org.bukkit.*;
-import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -27,9 +18,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static MiniCash.miniCashwerewolf.Event.ItemTimer.check;
 import static MiniCash.miniCashwerewolf.MiniCashwerewolf.*;
-import static MiniCash.miniCashwerewolf.Timer.nowtime;
+import static MiniCash.miniCashwerewolf.timer.Timer.nowtime;
 import static MiniCash.miniCashwerewolf.WolfMain.villagerlistcount;
 import static MiniCash.miniCashwerewolf.WolfMain.wolflistcount;
 
@@ -159,7 +149,7 @@ public class Item {
 
 
         //GUI関連処理
-        Inventory knightGUI = Bukkit.createInventory(new knightGuiHolder(),27,"プレイヤー選択");  //サイズ9*○○
+        Inventory knightGUI = Bukkit.createInventory(new KnightGuiHolder(),27,"プレイヤー選択");  //サイズ9*○○
 
 
         int count = 0; //GUIに設置した数カウント用
@@ -199,7 +189,20 @@ public class Item {
 
 
 
-
+//        if (entity != null) {
+//
+//            target = entity;
+//            UUID id = target.getUniqueId();
+//            knightProtectedPlayers.add(id);
+//
+//            if (!check){
+//                //タイマースタート
+//                new ItemTimer().runTaskTimer(getPlugin(), 0L, 20L);
+//                check = true;
+//            }
+//        }else {
+//            getPlugin().getServer().getLogger().info("騎士：周囲にエンティティがいません");
+//        }
     }
 
 
@@ -208,7 +211,7 @@ public class Item {
     public static void fortuneitem(Player player){
 
         //GUI関連処理
-        Inventory fortuneGUI = Bukkit.createInventory(new fortuneGuiHolder(),27,"§d§l占うプレイヤー選択");  //サイズ9*○○
+        Inventory fortuneGUI = Bukkit.createInventory(new FortuneGuiHolder(),27,"§d§l占うプレイヤー選択");  //サイズ9*○○
 
         int count = 0; //GUIに設置した数カウント用
 
@@ -287,20 +290,22 @@ public class Item {
     //煙幕
     public static void smoke(Player player){
         new BukkitRunnable() {
+            Location loc = player.getLocation();
             int time = 5;  //煙幕時間
             @Override
             public void run() {
-                if (time >= 0) {
+                if (time <= 0) {
                     this.cancel();
+                    return;
                 }
 
-                Location loc = player.getLocation();
                 player.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 1000, 3, 2.5, 3, 0);
                 //範囲内のプレイヤーにエフェクト付与
                 loc.getWorld().getNearbyEntities(loc, 3, 3, 3)
                         .stream()
                         .filter(entiry -> entiry instanceof Player)
                         .forEach(pla -> ((Player)pla).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1)));
+
                 time--;
             }
 
@@ -312,4 +317,3 @@ public class Item {
 
 
 }
-
