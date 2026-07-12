@@ -16,10 +16,10 @@ import java.util.List;
 
 public class GameItem {
 
-    private MiniCashwerewolf plugin;
+    private static MiniCashwerewolf plugin;
 
     public GameItem(MiniCashwerewolf plugin){
-        this.plugin = plugin;
+        GameItem.plugin = plugin;
     }
 
     public static ItemStack createItem(String itemn , int amount){
@@ -50,9 +50,6 @@ public class GameItem {
 
             return  wolfitem;
 
-            player.getInventory().addItem(wolfitem); //アイテム付与
-
-            player.sendMessage("§4" + player.getName() + "に「人狼の斧」を付与しました");
 
         }
 
@@ -70,9 +67,7 @@ public class GameItem {
 
             return madmanitem;
 
-            player.getInventory().addItem(madmanitem); //アイテム人狼に付与
 
-            player.sendMessage("§4" + player.getName() + "に「味方を探せ！」を付与しました");
 
         }
 
@@ -90,9 +85,7 @@ public class GameItem {
 
             return  knightitem;
 
-            player.getInventory().addItem(knightitem); //アイテム付与
 
-            player.sendMessage("§4" + player.getName() + "に「守りの盾」を付与しました");
         }
 
         //占い師
@@ -110,11 +103,6 @@ public class GameItem {
 
             return fortuneitem;
 
-            player.getInventory().addItem(fortuneitem); //アイテム付与
-
-
-
-            player.sendMessage("§4" + player.getName() + "に「占い」を付与しました");
         }
 
         //霊媒師
@@ -163,9 +151,7 @@ public class GameItem {
 
             return coin;
 
-            player.getInventory().addItem(coin);
 
-            player.sendMessage("§4" + player.getName() + "に「コイン」を付与しました");
         }else if (itemn.equals("glowing")){
             ItemStack glowingitem = new ItemStack(Material.GLOW_INK_SAC, amount);
             ItemMeta glowingitemmeta = glowingitem.getItemMeta();
@@ -215,5 +201,6 @@ public class GameItem {
             return smoke;
         }
 
+        return new ItemStack(Material.DIRT);
     }
 }

@@ -1,6 +1,7 @@
 package MiniCash.miniCashwerewolf.command;
 
 import MiniCash.miniCashwerewolf.DB.DB;
+import MiniCash.miniCashwerewolf.GameItem;
 import MiniCash.miniCashwerewolf.MiniCashwerewolf;
 import MiniCash.miniCashwerewolf.RoleManager;
 import MiniCash.miniCashwerewolf.WolfMain;
@@ -10,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -185,13 +187,23 @@ public class GameCommand implements BasicCommand {
 
                 String a2 = args[2];
                 String japosition;
-                Player target;
+                OfflinePlayer target;
                 try {
-                    target = Bukkit.getPlayerExact(a2);
-                    UUID id = target.getUniqueId();
-                    int getposition = position.getOrDefault(id,0);
-                    japosition = plugin.numberposition(getposition);
 
+                    target = Bukkit.getOfflinePlayer(a2);
+                    UUID id = target.getUniqueId();
+
+                    RoleManager.RoleType roleType =  RoleManager.getPlayerRole().getOrDefault(id, RoleManager.RoleType.NO);
+
+                    if (roleType == RoleManager.RoleType.NO) {
+                        sender.sendMessage(
+                                Component.text("§6§l現在" + target.getName() + "の役職はありません")
+                        );
+
+                        return;
+                    }
+
+                    japosition = roleType.name();
 
                     sender.sendMessage("§6§l現在" + target.getName() + "の役職は§r" + japosition + "§§6です");
 
@@ -212,13 +224,39 @@ public class GameCommand implements BasicCommand {
 
 
         }else if (args[0].equals("give") && sender.hasPermission("minicashwerewolf.command.game.give")){
-            if (args.length < 2){
-                plugin.help(sender);
-                return ;
-            }
-            String itemname = args[1];
-            plugin.givecommanditem(player,itemname);
 
+            if(sender instanceof Player player) {
+
+                if (args.length < 2) {
+                    plugin.help(player);
+                    return;
+                }
+                String itemname = args[1];
+
+                /*===================================
+
+
+
+                    アイテム名として受け取った名前が実際に登録されているかをチェックする処理を追加必須
+
+
+
+                 =========================================*/
+
+                player.getInventory().addItem(GameItem.createItem(itemname,1));
+
+                player.sendMessage(
+                        Component.text("§4" + player.getName() + "に「守りの盾」を付与しました")
+                );
+
+
+            }else {
+                sender.sendMessage(
+                        Component.text("このコマンドはプレイヤーのみ実行可能です").color(NamedTextColor.RED)
+                );
+            }
+
+            return;
 
         } else if (args[0].equals("stop") && sender.hasPermission("minicashwerewolf.command.game.stop")) {
 

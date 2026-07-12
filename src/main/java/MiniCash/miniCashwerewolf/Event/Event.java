@@ -62,7 +62,7 @@ public class Event implements Listener {
                 if (!player.isWhitelisted()) {
                     event.disallow(
                             PlayerLoginEvent.Result.KICK_WHITELIST,
-                            "\n§a[MiniCashwerewolf]\n §4§lあなたは人狼ゲームに参加されていません。 \n§r§lゲームが終了するまでお待ちください。"
+                            "§a[MiniCashwerewolf] §4§lあなたは人狼ゲームに参加されていません。 \n§r§lゲームが終了するまでお待ちください。"
                     );
                 }
             }
@@ -486,15 +486,7 @@ public class Event implements Listener {
 
         Player player = event.getPlayer();
 
-        if (gamePlaying) {
 
-            if (event instanceof Villager) {
-
-                UUID id = player.getUniqueId();
-                int getposition = position.get(id);
-
-            }
-        }
 
 
 

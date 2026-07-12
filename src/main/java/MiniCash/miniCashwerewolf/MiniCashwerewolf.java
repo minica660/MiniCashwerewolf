@@ -5,30 +5,17 @@ import MiniCash.miniCashwerewolf.DB.DB;
 import MiniCash.miniCashwerewolf.Event.Event;
 import MiniCash.miniCashwerewolf.command.Main;
 import MiniCash.miniCashwerewolf.command.Tab;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 
 import java.util.*;
-import java.util.List;
-
-import static MiniCash.miniCashwerewolf.Event.Event.players;
 
 public final class MiniCashwerewolf extends JavaPlugin {
-   public static Plugin plugin;
 
     private DB dbManager;
     private WolfMain wolfmain;
@@ -47,20 +34,11 @@ public final class MiniCashwerewolf extends JavaPlugin {
         saveDefaultConfig();
 
 
-        plugin = this;
-        //例： config.set("spawnpoint.x",2);
-
-
-        //getConfig().set("gamePlaying",false);
-        //セーブ
-        //saveConfig();
-
-
 
         getServer().getPluginManager().registerEvents(new Event(this,wolfmain),this);
 
 
-        addchecklist();
+        RoleManager.setCheckList();
 
 
         try {
@@ -76,19 +54,12 @@ public final class MiniCashwerewolf extends JavaPlugin {
 
 
 
-        //データベースのmlogテーブルにプラグイン起動を記録
-        dbManager.addlog("MPLUGIN","MiniPL","プラグインが起動しました");
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
 
-        if (dbManager != null) {
-            //データベースのmlogテーブルにプラグイン停止を記録
-            // addlog非同期なため、書き終わる前にcloseConnectionが走る可能性があるため非同期ではない別のaddlogメソッド必要かも?
-            dbManager.addlog("MPLUGIN", "MiniPL", "プラグインが停止しました");
-        }
 
         if (dbManager != null) {
             dbManager.closeConnection();
@@ -115,9 +86,6 @@ public final class MiniCashwerewolf extends JavaPlugin {
     public int meetingpointZ = getConfig().getInt("meetingpoint.z");
 
 
-    public static Plugin getPlugin(){
-        return plugin;
-    }
 
 
 

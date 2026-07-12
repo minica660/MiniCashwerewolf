@@ -1,25 +1,23 @@
 package MiniCash.miniCashwerewolf;
 
+import MiniCash.miniCashwerewolf.Event.Event;
 import MiniCash.miniCashwerewolf.gui.VoteGuiHolder;
 import MiniCash.miniCashwerewolf.timer.MeetingTimer;
 import MiniCash.miniCashwerewolf.timer.Timer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static MiniCash.miniCashwerewolf.Event.Event.players;
 import static MiniCash.miniCashwerewolf.timer.MeetingTimer.mstop;
 import static MiniCash.miniCashwerewolf.MiniCashwerewolf.madman;
 import static MiniCash.miniCashwerewolf.MiniCashwerewolf.*;
@@ -27,7 +25,7 @@ import static MiniCash.miniCashwerewolf.timer.Timer.*;
 import static MiniCash.miniCashwerewolf.timer.Timer.tstop;
 
 public class WolfMain {
-    private static MiniCashwerewolf plugin = null;
+    private static MiniCashwerewolf plugin;
 
 
     public WolfMain(MiniCashwerewolf plugin){
@@ -55,48 +53,22 @@ public class WolfMain {
         }
 
         //騎士
-        if (plugin.getConfig().getBoolean("knight.check")) {
-
-            ItemStack knightitem = new ItemStack(Material.SHIELD, 1);
-
-            ItemMeta knightitemmeta = knightitem.getItemMeta();
-            knightitemmeta.setDisplayName("§5守りの盾");
-            knightitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            knightitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "knight_item");
+        if (RoleManager.activeRole(RoleManager.RoleType.KNIGHT)) {
 
 
-            knightitem.setItemMeta(knightitemmeta); //アイテムメタを設定
-            knight.getInventory().addItem(knightitem); //アイテム付与
+            knight.getInventory().addItem(GameItem.createItem("knight",1)); //アイテム付与
         }
 
         //占い師
-        if (plugin.getConfig().getBoolean("fortune.check")){
+        if (RoleManager.activeRole(RoleManager.RoleType.FORTUNE)) {
 
-            ItemStack fortuneitem = new ItemStack(Material.AMETHYST_SHARD, 1);
-
-            ItemMeta fortuneitemmeta = fortuneitem.getItemMeta();
-            fortuneitemmeta.setDisplayName("§5§l占い");
-            fortuneitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            fortuneitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "fortune_item");
-
-
-            fortuneitem.setItemMeta(fortuneitemmeta); //アイテムメタを設定
-            fortune.getInventory().addItem(fortuneitem); //アイテム付与
+            fortune.getInventory().addItem(GameItem.createItem("fortunecheck",1)); //アイテム付与
         }
 
         //霊媒師
-        if (plugin.getConfig().getBoolean("medium.check")){
+        if (RoleManager.activeRole(RoleManager.RoleType.MEDIUM)){
 
-            ItemStack mediumitem = new ItemStack(Material.NETHER_STAR, 1);
-
-            ItemMeta mediumitemmeta = mediumitem.getItemMeta();
-            mediumitemmeta.setDisplayName("§5§l霊媒師用のアイテム");
-            mediumitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            mediumitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "medium_item");
-
-
-            mediumitem.setItemMeta(mediumitemmeta); //アイテムメタを設定
-            medium.getInventory().addItem(mediumitem); //アイテム付与
+            medium.getInventory().addItem(GameItem.createItem("mediumcheck",1)); //アイテム付与
         }
 
 
@@ -114,17 +86,19 @@ public class WolfMain {
 
             UUID id = player.getUniqueId();
 
-            int positioncheck = position.getOrDefault(id,0);
+            if (RoleManager.playerHasGameRole(id)){
 
-            //ここからの処理の意味
-            //ゲームに参加するプレイヤー以外かの確認
-            if (positioncheck >= 1){
-                gameplayer = Bukkit.getPlayer(id);
-                gameplayer.setWhitelisted(true);     //ホワイトリストに追加
-            }else if (positioncheck == 0){     //参加しないプレイヤーはkick
+                gameplayer = player;
+                gameplayer.setWhitelisted(true);
+
+            }else {
+
                 player.setWhitelisted(false);
-                player.kick(Component.text("§cゲームが開始されました。ゲーム終了までお待ちください。"));
+                player.kick(
+                        Component.text("ゲームが開始されました。\nゲーム終了までお待ちください。").color(NamedTextColor.RED)
+                );
             }
+
 
             Bukkit.setWhitelist(true);  //ホワイトリスト有効化
 
@@ -180,14 +154,15 @@ public class WolfMain {
         //勝利のための
         for (Player onlineplayer : Bukkit.getOnlinePlayers()){
 
-            UUID id  = onlineplayer.getUniqueId();
+            UUID uuid  = onlineplayer.getUniqueId();
 
-            int getpotision = position.get(id);
+            RoleManager.RoleType roleType = RoleManager.getPlayerRole().get(uuid);
 
-            //人狼だったら＋１（狂人などは人狼認定されないため別）
-            if (getpotision == 1){
+
+            //人狼だったら
+            if (roleType == RoleManager.RoleType.WOLF){
                 wolflistcount++;
-            }else if (getpotision >= 3 && getpotision <=6){     //市民陣営の人数の合計をチェック
+            }else if (roleType != RoleManager.RoleType.SPECTATOR){     //市民陣営の人数の合計をチェック
                 villagerlistcount++;
             }
 
@@ -273,7 +248,7 @@ public class WolfMain {
 
 
         //タイマースタート
-        new Timer(plugin,this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
+        new Timer(plugin,this).runTaskTimer(plugin,0L,20L);
         nowtime = true;
 
     }
@@ -282,13 +257,13 @@ public class WolfMain {
         //ホワイトリスト解除
         Bukkit.setWhitelist(false);
 
-        Bukkit.getLogger().info("[§aMiniCashwerewolf§r] §lホワイトリストをoffにしました");
+        plugin.getLogger().info("[§aMiniCashwerewolf§r] §lホワイトリストをoffにしました");
 
 
         //ゲーム実行中をfalseに変更
         gamePlaying = false;
 
-        plugin.addchecklist();
+        RoleManager.setCheckList();
 
         plugin.getLogger().info("[§aMiniCashwerewolf§r] §lゲーム終了処理がすべて完了しました");
 
@@ -302,9 +277,9 @@ public class WolfMain {
         villager = null;
         spectator = null;
 
-        position.clear();
+        RoleManager.getPlayerRole().clear();
 
-        players.clear();
+        Event.players.clear();
     }
 
 
@@ -346,7 +321,7 @@ public class WolfMain {
         Bukkit.broadcastMessage("§lマイクをONにして話し合いましょう");
 
         //タイマースタート
-        new Timer(plugin,this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
+        new Timer(plugin,this).runTaskTimer(plugin,0L,20L);
 
         //オンラインプレイヤー全員にタイトルを表示
         for (Player titleonlinep : Bukkit.getOnlinePlayers()){
@@ -354,22 +329,7 @@ public class WolfMain {
         }
 
 
-        //2日目の昼からは会議場所から初期地点へのスポーン
-//            if (mcheck >= 1 ){
-//                //スタート時のスポーン
-//
-//                int stpX = startpointX;
-//                int stpY = startpointY;
-//                int stpZ = startpointZ;
-//
-//                World world = Bukkit.getWorld(startpointworld);
-//                Location location = new Location(world,stpX,stpY,stpZ);
-//
-//                //テレポート
-//                for (Player onlineplayer : Bukkit.getOnlinePlayers()) {
-//                    onlineplayer.teleport(location);
-//                }
-//            }
+
 
 
         //時間を昼に変更
@@ -389,7 +349,7 @@ public class WolfMain {
         Bukkit.broadcastMessage("§lマイクをOFFにしてください");
 
         //タイマースタート
-        new Timer(plugin,this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
+        new Timer(plugin,this).runTaskTimer(plugin,0L,20L);
 
         //オンラインプレイヤー全員にタイトルを表示
         for (Player titleonlinep : Bukkit.getOnlinePlayers()){
@@ -443,7 +403,7 @@ public class WolfMain {
 
 
         //タイマー
-        new MeetingTimer(plugin,this).runTaskTimer(MiniCashwerewolf.getPlugin(),0L,20L);
+        new MeetingTimer(plugin,this).runTaskTimer(plugin,0L,20L);
 
 
 

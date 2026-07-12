@@ -24,7 +24,11 @@ public class RoleManager {
         return roles.containsKey(role);
     }
 
-    public void addchecklist(){
+    public static boolean playerHasGameRole(UUID uuid){
+        return playerRole.containsKey(uuid);
+    }
+
+    public static void setCheckList(){
         checklist.clear();
         checklist.add(RoleType.WOLF); //人狼
         checklist.add(RoleType.MADMAN); //狂人
@@ -38,6 +42,7 @@ public class RoleManager {
     }
 
     public enum RoleType{
+        NO("no","役職無し"),
         WOLF("wolf","人狼"),
         MADMAN("madman","狂人"),
         KNIGHT("knight","騎士"),
@@ -62,6 +67,9 @@ public class RoleManager {
 
     }
 
+    public static Map<UUID ,RoleType> getPlayerRole(){
+        return playerRole;
+    }
 
     //役職設定人数分プレイヤーがいるかをチェック
     //いなかったらtrue,いたらfalse　を返します
