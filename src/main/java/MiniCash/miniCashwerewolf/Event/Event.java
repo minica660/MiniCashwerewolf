@@ -1,20 +1,25 @@
 package MiniCash.miniCashwerewolf.Event;
 
-import MiniCash.miniCashwerewolf.MiniCashwerewolf;
-import MiniCash.miniCashwerewolf.WolfMain;
+import MiniCash.miniCashwerewolf.MiniCashWereWolf;
+import MiniCash.miniCashwerewolf.RoleManager;
+import MiniCash.miniCashwerewolf.GameManager;
 import MiniCash.miniCashwerewolf.gui.VoteGuiHolder;
 import MiniCash.miniCashwerewolf.gui.FortuneGuiHolder;
 import MiniCash.miniCashwerewolf.gui.KnightGuiHolder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -35,17 +40,17 @@ import java.util.*;
 
 import static MiniCash.miniCashwerewolf.Event.Item.*;
 import static MiniCash.miniCashwerewolf.Event.ItemTimer.settarget;
-import static MiniCash.miniCashwerewolf.MiniCashwerewolf.*;
-import static MiniCash.miniCashwerewolf.WolfMain.villagerlistcount;
-import static MiniCash.miniCashwerewolf.WolfMain.wolflistcount;
+import static MiniCash.miniCashwerewolf.MiniCashWereWolf.*;
+import static MiniCash.miniCashwerewolf.GameManager.villagerlistcount;
+import static MiniCash.miniCashwerewolf.GameManager.wolflistcount;
 import static MiniCash.miniCashwerewolf.gui.ShopGUI.openshopgui;
 
 
 public class Event implements Listener {
-    private final MiniCashwerewolf plugin;
-    private final WolfMain wolfmain;
+    private final MiniCashWereWolf plugin;
+    private final GameManager wolfmain;
 
-    public Event(MiniCashwerewolf plugin, WolfMain wolfmain) {
+    public Event(MiniCashWereWolf plugin, GameManager wolfmain) {
         this.plugin = plugin;
         this.wolfmain = wolfmain;
     }
@@ -73,7 +78,7 @@ public class Event implements Listener {
 
 
     @EventHandler
-    public void click(InventoryClickEvent event) {
+    public void inventoryClick(InventoryClickEvent event) {
 
         //空のスロットをクリックしていたら処理を停止
         if (event.getCurrentItem() == null) {
@@ -105,7 +110,7 @@ public class Event implements Listener {
                 } else {
                     String nameVote = event.getCurrentItem().getItemMeta().getDisplayName();
                     //呼び出し
-                    String voteretrunstring = wolfmain.votego(nameVote);
+                    String voteretrunstring = wolfmain.voteGo(nameVote);
 
                     player.closeInventory();
 
@@ -134,7 +139,7 @@ public class Event implements Listener {
             UUID targetid = target.getUniqueId();
             knightProtectedPlayers.add(targetid);
 
-            new ItemTimer().runTaskTimer(MiniCashwerewolf.getPlugin(), 0L, 20L);
+            new ItemTimer().runTaskTimer(plugin, 0L, 20L);
 
 
         } else if (event.getInventory().getHolder() instanceof FortuneGuiHolder) {
@@ -147,18 +152,25 @@ public class Event implements Listener {
 
             Player target = Bukkit.getPlayer(nameVote);
 
-            UUID tid = target.getUniqueId();
+            UUID uuid = target.getUniqueId();
 
-            int getposition = position.getOrDefault(tid, 0);
+            RoleManager.RoleType targetRole = RoleManager.getPlayerRole().getOrDefault(uuid, RoleManager.RoleType.NO);
+
             String message;
 
             //占い結果
-            if (getposition == 1 || getposition == 2) {        //黒陣営処理
+            if (targetRole.equals(RoleManager.RoleType.WOLF)) {
+                //黒陣営処理
                 message = "§4黒陣営";
-            }else if (getposition >= 3 &&  getposition <= 99) {     //白陣営
-                message = "§b白陣営";
-            }else {
+
+            }else if (targetRole.equals(RoleManager.RoleType.NO)) {
+
                 message = "§b§k....§r";
+
+            }else {
+                //白陣営
+                message = "§b白陣営";
+
             }
 
             player.sendMessage(  "§l" + target.getName() + "§rの役職は" +  message + " §r§lです");
@@ -267,7 +279,7 @@ public class Event implements Listener {
                     player.sendMessage(headname + "を占おうとしてるよ！");
                     Player target = Bukkit.getPlayer(headname);
                     UUID targetid = target.getUniqueId();
-                    int getposition = position.getOrDefault(targetid,0);
+                    RoleManager.RoleType targetRoleType = RoleManager.getPlayerRole().getOrDefault(targetid, RoleManager.RoleType.NO);
                     String message;
 
                     //アイテム削除
@@ -275,12 +287,13 @@ public class Event implements Listener {
                     mainitem.setAmount(mainitem.getAmount() - 1);
 
                     //霊媒結果
-                    if (getposition == 1 || getposition == 2) {        //黒陣営処理
+                    if (targetRoleType.equals(RoleManager.RoleType.WOLF) ) {        //黒陣営処理
                         message = "§4黒陣営";
-                    }else if (getposition >= 3 &&  getposition <= 99) {     //白陣営
-                        message = "§b白陣営";
-                    }else {
+                    }else if (targetRoleType.equals(RoleManager.RoleType.NO)) {     //白陣営
                         message = "§b§k....§r";
+                    }else {
+                        message = "§b白陣営";
+
                     }
 
                     player.sendMessage(  "§l" + target.getName() + "§rは" +  message + " §r§lでした");
@@ -351,15 +364,15 @@ public class Event implements Listener {
 
             //カウント-
             Entity entity = event.getEntity();
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
+            if (entity instanceof Player player) {
 
                 UUID id = player.getUniqueId();
-                int getplayerpotision = position.get(id);
 
-                if (getplayerpotision == 1) {
+                RoleManager.RoleType playerRole = RoleManager.getPlayerRole().getOrDefault(id, RoleManager.RoleType.NO);
+
+                if (playerRole.equals(RoleManager.RoleType.WOLF)) {
                     wolflistcount--;
-                } else if (getplayerpotision >= 3 && getplayerpotision <= 6) {
+                } else if (!playerRole.equals(RoleManager.RoleType.NO) && !playerRole.equals(RoleManager.RoleType.SPECTATOR)) {
                     villagerlistcount--;
                 }
 
@@ -367,11 +380,11 @@ public class Event implements Listener {
 
                 if (wolflistcount == 0) {    //市民勝利
 
-                    wolfmain.villagerwin();
+                    wolfmain.villagerWin();
 
                 } else if (villagerlistcount == 0) {
 
-                    wolfmain.wolfwin();
+                    wolfmain.wolfWin();
 
                 }
 
@@ -416,7 +429,7 @@ public class Event implements Listener {
                     // このスケルトンだけ特別処理
                     ItemStack spawngolditem = new ItemStack(Material.GOLD_INGOT);
                     ItemMeta spawngolditemmeta = spawngolditem.getItemMeta();
-                    spawngolditemmeta.setDisplayName("§6コイン");
+                    spawngolditemmeta.itemName(Component.text("コイン").color(NamedTextColor.GOLD));
                     spawngolditemmeta.setLore(List.of("§a人狼ゲーム専用コイン"));
                     spawngolditemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "spawn_gold_ingot");
                     spawngolditem.setItemMeta(spawngolditemmeta); //アイテムメタを設定
@@ -508,33 +521,34 @@ public class Event implements Listener {
     @EventHandler
     public void SignChange(SignChangeEvent event) {
 
-        String line1 = event.getLine(0);
-        String line2 = event.getLine(1);
+        String line1 = PlainTextComponentSerializer.plainText().serialize(event.line(0));
+        String line2 = PlainTextComponentSerializer.plainText().serialize(event.line(1));
 
-        if (line1 != null && line1.equals("mwgame")) {
+        if (line1.equals("mwgame")) {
 
-            if (line2 != null && line2.equals("Join")) {
+            if (line2.equals("Join")) {
 
-                String setline1 = "§6[mwerewolf]";
-                String setline2 = "§a右クリックで";
-                String setline3 = "§a§l§n人狼ゲーム";
-                String setline4 = "§aに参加";
+                Component setline1 = Component.text("[mwerewolf]").color(NamedTextColor.GOLD);
+                Component setline2 = Component.text("右クリックで").color(NamedTextColor.GREEN);
+                Component setline3 = Component.text("人狼ゲーム").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD);
+                Component setline4 = Component.text("に参加").color(NamedTextColor.GREEN);
 
-                event.setLine(0,setline1);
-                event.setLine(1,setline2);
-                event.setLine(2,setline3);
-                event.setLine(3,setline4);
-            }else if (line2 != null && line2.equals("Spectator")) {
+
+                event.line(0,setline1);
+                event.line(1,setline2);
+                event.line(2,setline3);
+                event.line(3,setline4);
+            }else if (line2.equals("Spectator")) {
                 //観戦者用
 
-                event.setLine(0,"§6[mwerewolf]");
-                event.setLine(1,"§a右クリックで");
-                event.setLine(2,"§6観戦者として登録");
-            }else if (line2 != null && line2.equals("Cancel")){
+                event.line(0,Component.text("[mwerewolf]").color(NamedTextColor.GOLD));
+                event.line(1,Component.text("右クリックで").color(NamedTextColor.GREEN));
+                event.line(2,Component.text("観戦者として登録").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
+            }else if (line2.equals("Cancel")){
                 //登録キャンセル
-                event.setLine(0,"§6[mwerewolf]");
-                event.setLine(1,"§a右クリックで");
-                event.setLine(2,"§c登録をキャンセル");
+                event.line(0,Component.text("[mwerewolf]").color(NamedTextColor.GOLD));
+                event.line(1,Component.text("右クリックで").color(NamedTextColor.GREEN));
+                event.line(2,Component.text("登録をキャンセル").color(NamedTextColor.RED));
             }
 
         }
@@ -542,7 +556,7 @@ public class Event implements Listener {
 
     }
 
-    public static List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+//    public static List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 
     @EventHandler
     public void clickblock(PlayerInteractEvent event) {
@@ -551,50 +565,57 @@ public class Event implements Listener {
 
             Block block = event.getClickedBlock();
 
-            if (block != null && block.getState() instanceof Sign){
+            if (block != null && block.getState() instanceof Sign sign){
 
-                Sign sign = (Sign) block.getState();
+                List<Component> allLines = sign.getSide(Side.FRONT).lines();
 
-                    if (sign.getLine(0).equals("§6[mwerewolf]") && sign.getLine(1).equals("§a右クリックで") && sign.getLine(2).equals("§a§l§n人狼ゲーム") && sign.getLine(3).equals("§aに参加")){
+                String line1 = PlainTextComponentSerializer.plainText().serialize(allLines.get(0));
+                String line2 = PlainTextComponentSerializer.plainText().serialize(allLines.get(1));
+                String line3 = PlainTextComponentSerializer.plainText().serialize(allLines.get(2));
+                String line4 = PlainTextComponentSerializer.plainText().serialize(allLines.get(3));
 
-                        //すでに登録又は観戦者として登録していないかのチェック
-                        int getposition = position.getOrDefault(player.getUniqueId(),0);
-                        if (players.contains(player) || getposition >= 1) {
-                            player.sendMessage("§cすでに人狼ゲームに登録しています！");
-                        }else {
+                if (line1.equals("§6[mwerewolf]") && line2.equals("§a右クリックで")
+                        && line3.equals("§a§l§n人狼ゲーム")
+                        && line4.equals("§aに参加")) {
 
-                            //ここからゲームに参加準備をした後の処理記述！
+                    //すでに登録していないかのチェック
+                    if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
+                        player.sendMessage("§cすでに人狼ゲームに登録しています！");
+                    } else {
 
-                            //参加したいプレイヤーをplayersListに入れる
-                            player.sendMessage("§a§l人狼ゲームに登録しました");
-                            players.add(player);
-                        }
-                    }else if (sign.getLine(0).equals("§6[mwerewolf]") && sign.getLine(1).equals("§a右クリックで") && sign.getLine(2).equals("§6観戦者として登録")){
+                        //ここからゲームに参加準備をした後の処理記述！
+
+                        //参加したいプレイヤーをplayersListに入れる
+                        player.sendMessage("§a§l人狼ゲームに登録しました");
+                        players.add(player);
+                    }
+
+                }else if (line1.equals("§6[mwerewolf]") && line2.equals("§a右クリックで")
+                        && line3.equals("§6観戦者として登録")){
                     //先に普通の登録をしていないかのチェック
-                    int getposition = position.getOrDefault(player.getUniqueId(),0);
-                    if (players.contains(player) || getposition >= 1) {
+                    if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
                         player.sendMessage("§cすでに人狼ゲームに登録しています！");
                     }else {
 
                         //これと同じ看板をクリックしたらそのプレイヤーを観戦者として登録
                         UUID id = player.getUniqueId();
-                        position.put(id, 100);
+                        RoleManager.playerRoleSet(player , RoleManager.RoleType.SPECTATOR);
                         player.sendMessage("§a§l人狼ゲームに§6観戦者§a§lとして登録しました");
+
                     }
-                }else if (sign.getLine(0).equals("§6[mwerewolf]") && sign.getLine(1).equals("§a右クリックで") && sign.getLine(2).equals("§c登録をキャンセル")){
+                }else if (line1 .equals("§6[mwerewolf]") && line2.equals("§a右クリックで")
+                        && line3.equals("§c登録をキャンセル")){
                         //登録キャンセル
                         //ゲームに登録又は、役職を設定しているのかをチェック
-                    int getposition = position.getOrDefault(player.getUniqueId(),0);
-                    if (players.contains(player)) {
+
+                    if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
 
                         players.remove(player);
                         player.sendMessage("§b人狼ゲームの登録を解除しました");
 
-                    } else if (getposition >= 1) {
-                        position.put(player.getUniqueId(),0);
-                        player.sendMessage("§b人狼ゲームの登録を解除しました");
-                    }else {        //まだ登録していなかったら
+                    }else {
 
+                        //まだ登録していなかったら
                         player.sendMessage("§cまだ人狼ゲームに登録していません！");
 
                     }
@@ -612,7 +633,10 @@ public class Event implements Listener {
 
     @EventHandler
     public void PlayerDeathEvent(PlayerDeathEvent event) {
-        event.setDeathMessage(null);
+
+        if(MiniCashWereWolf.gamePlaying) {
+            event.deathMessage(null);
+        }
     }
 
 

@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.UUID;
 
-import static MiniCash.miniCashwerewolf.MiniCashwerewolf.guicheck;
+import static MiniCash.miniCashwerewolf.MiniCashWereWolf.guicheck;
 
 public class ShopGUI {
 

@@ -1,5 +1,6 @@
 package MiniCash.miniCashwerewolf.Event;
 
+import MiniCash.miniCashwerewolf.MiniCashWereWolf;
 import MiniCash.miniCashwerewolf.gui.FortuneGuiHolder;
 import MiniCash.miniCashwerewolf.gui.KnightGuiHolder;
 import org.bukkit.*;
@@ -18,12 +19,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static MiniCash.miniCashwerewolf.MiniCashwerewolf.*;
+import static MiniCash.miniCashwerewolf.MiniCashWereWolf.*;
 import static MiniCash.miniCashwerewolf.timer.Timer.nowtime;
-import static MiniCash.miniCashwerewolf.WolfMain.villagerlistcount;
-import static MiniCash.miniCashwerewolf.WolfMain.wolflistcount;
+import static MiniCash.miniCashwerewolf.GameManager.villagerlistcount;
+import static MiniCash.miniCashwerewolf.GameManager.wolflistcount;
 
 public class Item {
+
+    private static MiniCashWereWolf plugin;
+
+    public Item(MiniCashWereWolf plugin) {
+        this.plugin = plugin;
+    }
 
     //人狼アイテム効果
     public static void wolfitem(Player player) {
@@ -118,12 +125,13 @@ public class Item {
 
 
     //狂人専用アイテム
+    // どういうアイテム？何の目的で作った？
     public static String madmanitem(Player player) {
         String resturnm = "§9味方：§r§l";
 
-        if (gamePlaying) {
+        if (MiniCashWereWolf.gamePlaying) {
             for (Player p : Bukkit.getOnlinePlayers()){
-            UUID id = p.getUniqueId();
+            UUID uuid = p.getUniqueId();
             int geti = position.getOrDefault(id, 0);
 
                 if (geti == 1) {

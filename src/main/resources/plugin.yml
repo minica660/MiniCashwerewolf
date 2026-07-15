@@ -1,6 +1,6 @@
 name: MiniCashwerewolf
 version: '1.0-SNAPSHOT'
-main: MiniCash.miniCashwerewolf.MiniCashwerewolf
+main: MiniCash.miniCashwerewolf.MiniCashWereWolf
 api-version: '1.21'
 
 commands:

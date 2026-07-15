@@ -1,9 +1,9 @@
 package MiniCash.miniCashwerewolf.command;
 
 import MiniCash.miniCashwerewolf.DB.DB;
-import MiniCash.miniCashwerewolf.MiniCashwerewolf;
+import MiniCash.miniCashwerewolf.MiniCashWereWolf;
 import MiniCash.miniCashwerewolf.Villager;
-import MiniCash.miniCashwerewolf.WolfMain;
+import MiniCash.miniCashwerewolf.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,17 +15,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-import static MiniCash.miniCashwerewolf.MiniCashwerewolf.gamePlaying;
-import static MiniCash.miniCashwerewolf.MiniCashwerewolf.position;
-import static MiniCash.miniCashwerewolf.WolfMain.*;
+import static MiniCash.miniCashwerewolf.MiniCashWereWolf.position;
 
 public class Main implements CommandExecutor {
 
-    private final MiniCashwerewolf plugin;
+    private final MiniCashWereWolf plugin;
     private final DB databasemanager;
-    private final WolfMain wolfmain;
+    private final GameManager wolfmain;
     private final Villager cvillager;
-    public Main(MiniCashwerewolf plugin, DB databasemanager, WolfMain wolfmain,Villager cvillager) {
+    public Main(MiniCashWereWolf plugin, DB databasemanager, GameManager wolfmain, Villager cvillager) {
         this.plugin = plugin;
         this.databasemanager = databasemanager;
         this.wolfmain = wolfmain;

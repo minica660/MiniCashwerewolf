@@ -2,9 +2,9 @@ package MiniCash.miniCashwerewolf.command;
 
 import MiniCash.miniCashwerewolf.DB.DB;
 import MiniCash.miniCashwerewolf.GameItem;
-import MiniCash.miniCashwerewolf.MiniCashwerewolf;
+import MiniCash.miniCashwerewolf.MiniCashWereWolf;
 import MiniCash.miniCashwerewolf.RoleManager;
-import MiniCash.miniCashwerewolf.WolfMain;
+import MiniCash.miniCashwerewolf.GameManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -21,18 +21,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 
-import static MiniCash.miniCashwerewolf.MiniCashwerewolf.gamePlaying;
-import static MiniCash.miniCashwerewolf.MiniCashwerewolf.position;
-import static MiniCash.miniCashwerewolf.WolfMain.distributionItem;
+import static MiniCash.miniCashwerewolf.MiniCashWereWolf.gamePlaying;
+import static MiniCash.miniCashwerewolf.GameManager.distributionItem;
 
 public class GameCommand implements BasicCommand {
-    private MiniCashwerewolf plugin;
+    private MiniCashWereWolf plugin;
 
     private final DB databasemanager;
-    private final WolfMain wolfmain;
+    private final GameManager wolfmain;
 
 
-    public GameCommand(MiniCashwerewolf plugin , DB databasemanager , WolfMain wolfmain) {
+    public GameCommand(MiniCashWereWolf plugin , DB databasemanager , GameManager wolfmain) {
         this.plugin = plugin;
         this.databasemanager = databasemanager;
         this.wolfmain = wolfmain;
@@ -81,7 +80,7 @@ public class GameCommand implements BasicCommand {
 
 
 
-            wolfmain.gstart(player);
+            wolfmain.gameStart(sender);
             distributionItem();
 
 

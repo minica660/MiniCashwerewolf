@@ -1,7 +1,7 @@
 package MiniCash.miniCashwerewolf.timer;
 
-import MiniCash.miniCashwerewolf.MiniCashwerewolf;
-import MiniCash.miniCashwerewolf.WolfMain;
+import MiniCash.miniCashwerewolf.MiniCashWereWolf;
+import MiniCash.miniCashwerewolf.GameManager;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Skeleton;
@@ -32,12 +32,12 @@ public class Timer extends BukkitRunnable {
 
 
     //aaaaa
-    private final MiniCashwerewolf plugin;
-    private final WolfMain wolfMain;
+    private final MiniCashWereWolf plugin;
+    private final GameManager gameManager;
 
-    public Timer(MiniCashwerewolf plugin,WolfMain wolfmain){
+    public Timer(MiniCashWereWolf plugin, GameManager wolfmain){
         this.plugin = plugin;
-        this.wolfMain = wolfmain;
+        this.gameManager = wolfmain;
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Timer extends BukkitRunnable {
         //会議関連メソッド呼び出し（1日の終わり　昼と夜）
         if (daytime == 0 && nowtime && mcheck == 0) {    //タイマーが終了したとき、昼で１日目ならここの処理を実行
             //夜に変更
-            wolfMain.noon();
+            gameManager.noon();
 
             mcheck++;
 
@@ -144,7 +144,7 @@ public class Timer extends BukkitRunnable {
 
 
         }else if (daytime == 0 && nowtime && mcheck >= 1){  //タイマーが終了したとき、昼で２日目以降なら会議に移動させるここの処理を実行
-            wolfMain.meeting(); //meeting呼び出し
+            gameManager.meeting(); //meeting呼び出し
 
             mcheck++;
 
@@ -161,7 +161,7 @@ public class Timer extends BukkitRunnable {
 
         }else if (daytime == 0 && !nowtime && mcheck >= 1){
             //夜ならnoonメソッド呼び出し
-            wolfMain.day();
+            gameManager.day();
 
             mcheck++;
             

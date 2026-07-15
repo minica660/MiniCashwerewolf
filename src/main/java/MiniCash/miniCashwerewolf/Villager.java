@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Villager {
-    private MiniCashwerewolf plugin = null;
-    public Villager(MiniCashwerewolf plugin){
+    private MiniCashWereWolf plugin = null;
+    public Villager(MiniCashWereWolf plugin){
         this.plugin = plugin;
     }
     //村人スポーン

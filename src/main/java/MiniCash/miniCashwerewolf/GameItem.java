@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -16,9 +15,9 @@ import java.util.List;
 
 public class GameItem {
 
-    private static MiniCashwerewolf plugin;
+    private static MiniCashWereWolf plugin;
 
-    public GameItem(MiniCashwerewolf plugin){
+    public GameItem(MiniCashWereWolf plugin){
         GameItem.plugin = plugin;
     }
 

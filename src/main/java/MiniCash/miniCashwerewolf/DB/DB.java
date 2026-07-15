@@ -1,6 +1,6 @@
 package MiniCash.miniCashwerewolf.DB;
 
-import MiniCash.miniCashwerewolf.MiniCashwerewolf;
+import MiniCash.miniCashwerewolf.MiniCashWereWolf;
 import org.bukkit.Bukkit;
 
 import java.sql.*;
@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import static java.sql.DriverManager.getConnection;
 
 public class DB {
-    private final MiniCashwerewolf plugin;
+    private final MiniCashWereWolf plugin;
 
-    public DB(MiniCashwerewolf plugin){
+    public DB(MiniCashWereWolf plugin){
         this.plugin = plugin;
     }
 

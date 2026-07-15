@@ -1,7 +1,7 @@
 package MiniCash.miniCashwerewolf.timer;
 
-import MiniCash.miniCashwerewolf.MiniCashwerewolf;
-import MiniCash.miniCashwerewolf.WolfMain;
+import MiniCash.miniCashwerewolf.MiniCashWereWolf;
+import MiniCash.miniCashwerewolf.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -11,10 +11,10 @@ import static MiniCash.miniCashwerewolf.timer.Timer.nowtime;
 public class MeetingTimer extends BukkitRunnable {
 
     //aaaaa
-    private final MiniCashwerewolf plugin;
-    private final WolfMain wolfmain;
+    private final MiniCashWereWolf plugin;
+    private final GameManager wolfmain;
 
-    public MeetingTimer(MiniCashwerewolf plugin,WolfMain wolfmain) {
+    public MeetingTimer(MiniCashWereWolf plugin, GameManager wolfmain) {
         this.plugin = plugin;
         this.wolfmain = wolfmain;
     }
@@ -58,7 +58,7 @@ public class MeetingTimer extends BukkitRunnable {
             //アイテム再配布
             wolfmain.distributionItem();
 
-            wolfmain.voteresult();
+            wolfmain.voteResult();
 
 
             //キャンセル

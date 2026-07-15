@@ -238,7 +238,7 @@ public class RoleManager {
     //2:その役職の設定人数が１人以上かをチェック
     //3:もし１人以上なら役職を設定
     //違うなら設定せずエラーメッセージを実行者に送信
-    public void playerRoleSet(Player player, RoleType roleType){
+    public static void playerRoleSet(Player player, RoleType roleType){
 
         UUID id = player.getUniqueId();
 
@@ -307,12 +307,9 @@ public class RoleManager {
 
         }else if (roleType.equals(RoleType.SPECTATOR)) {
 
-            if (role.isActive() && role.getTotal() >= 1) {
-                playerRole.put(id, RoleType.SPECTATOR);
-                player.sendMessage("§6役職を§5§l観戦者§r§6に設定しました");
-            }else {
-                player.sendMessage("§4§l役職設定人数を確認してください");
-            }
+            playerRole.put(id, RoleType.SPECTATOR);
+            player.sendMessage("§6役職を§5§l観戦者§r§6に設定しました");
+
 
         }else {
             player.sendMessage("§c§lサブコマンド入力方法を確認してください！");
