@@ -579,21 +579,23 @@ public class Event implements Listener {
                         && line4.equals("§aに参加")) {
 
                     //すでに登録していないかのチェック
-                    if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
+                    if (GameManager.getGameplayers().contains(player)) {
                         player.sendMessage("§cすでに人狼ゲームに登録しています！");
+                        return;
                     } else {
 
                         //ここからゲームに参加準備をした後の処理記述！
 
                         //参加したいプレイヤーをplayersListに入れる
                         player.sendMessage("§a§l人狼ゲームに登録しました");
-                        players.add(player);
+                        GameManager.addGamePlayer(player);
+
                     }
 
                 }else if (line1.equals("§6[mwerewolf]") && line2.equals("§a右クリックで")
                         && line3.equals("§6観戦者として登録")){
                     //先に普通の登録をしていないかのチェック
-                    if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
+                    if (GameManager.getGameplayers().contains(player)) {
                         player.sendMessage("§cすでに人狼ゲームに登録しています！");
                     }else {
 
@@ -608,9 +610,9 @@ public class Event implements Listener {
                         //登録キャンセル
                         //ゲームに登録又は、役職を設定しているのかをチェック
 
-                    if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
+                    if (GameManager.getGameplayers().contains(player)) {
 
-                        players.remove(player);
+                        GameManager.removeGamePlayer(player);
                         player.sendMessage("§b人狼ゲームの登録を解除しました");
 
                     }else {

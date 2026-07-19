@@ -29,7 +29,9 @@ import static MiniCash.miniCashwerewolf.timer.Timer.tstop;
 public class GameManager {
     private static MiniCashWereWolf plugin;
 
-    // ゲームに参加しているプレイヤー保存(一応)
+    // ゲームに参加する(している)プレイヤー保存
+    // ゲーム開始前は参加しようとしているプレイヤー一覧
+    // ゲーム開始後は観戦者を除いたゲームに参加しているプレイヤー
     private static List<Player> gameplayers;
 
     //各役職のプレイヤーが保存されている
@@ -47,7 +49,17 @@ public class GameManager {
         GameManager.plugin = plugin;
     }
 
+    public static List<Player> getGameplayers(){
+        return gameplayers;
+    }
 
+    public static void addGamePlayer(Player player){
+        gameplayers.add(player);
+    }
+
+    public static void removeGamePlayer(Player player){
+        gameplayers.remove(player);
+    }
 
 
 

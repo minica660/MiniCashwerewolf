@@ -4,15 +4,15 @@ import MiniCash.miniCashwerewolf.Event.Event;
 import MiniCash.miniCashwerewolf.model.Role;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import static MiniCash.miniCashwerewolf.Event.Event.players;
 
 public class RoleManager {
 
-    private static Map<RoleType , Role> roles = new HashMap<>();
+    private static Map<RoleType , Role> roles = new HashMap<>();    // 使用できるロール valueによりRoleModelを使用
     private static Map<UUID, RoleType> playerRole = new HashMap<>();
     public static List<RoleType> checklist = new ArrayList<>();     //役職が設定されているかのチェック用リスト
 
@@ -37,6 +37,7 @@ public class RoleManager {
         checklist.add(RoleType.MEDIUM); //霊媒師
         checklist.add(RoleType.MEDIUM); //市民+
 
+        
         checklist.add(RoleType.SPECTATOR); //観戦者用
 
     }
@@ -57,10 +58,19 @@ public class RoleManager {
             this.roleName = roleName;
             this.roleJapanaseName = roleJapanaseName;
         }
+
+
+        public String getJapaneseName() {
+            return roleJapanaseName;
+        }
+
+        public String getRoleName() {
+            return this.roleName;
+        }
     }
 
     //引数として受け取った役職名の役職があるかどうかのチェック
-    public  boolean check(String ps){
+    public static boolean check(String ps){
 
         //リストに入っている役職名だったらtrueを返す
         return checklist.contains(RoleType.valueOf(ps.toUpperCase()));
@@ -155,78 +165,66 @@ public class RoleManager {
 
 
     //ランダムな役職設定
-    public static void roleset() {
+    public static void randomPlayerRoleSet() {
 
+        List<RoleType> rolePool = new ArrayList<>();
 
-        //役職設定最大人数を取得
-        int wolfcount = roles.get(RoleType.WOLF).getTotal();
-        int madmancount = roles.get(RoleType.MADMAN).getTotal();
-        int knightcount = roles.get(RoleType.KNIGHT).getTotal();
-        int fortunecount = roles.get(RoleType.FORTUNE).getTotal();
-        int mediumcount = roles.get(RoleType.MEDIUM).getTotal();
-        int villagercount = roles.get(RoleType.VILLAGER).getTotal();
+        Map<RoleType, Integer> allocatedCounts = new HashMap<>();
 
+        for (RoleType roleType : playerRole.values()) {
 
-        List<RoleType> gameRole = new ArrayList<>(checklist);
+            allocatedCounts.put(roleType, allocatedCounts.getOrDefault(roleType, 0) + 1);
 
-        //その役職を使わない設定になっていたらリストから削除
-        if (!roles.get(RoleType.WOLF).isActive()) {
-            gameRole.remove(RoleType.WOLF);
         }
 
-        if (!roles.get(RoleType.MADMAN).isActive()) {
-            gameRole.remove(RoleType.MADMAN);
+        for (Map.Entry<RoleType, Role> entry : roles.entrySet()) {
+            RoleType type = entry.getKey();
+            Role role = entry.getValue();
+
+            if (type == RoleType.SPECTATOR || type == RoleType.NO) {
+                continue;
+            }
+
+            if (role.isActive() && role.getTotal() > 0) {
+
+                int alreadyAllocated = allocatedCounts.getOrDefault(type, 0);
+                int remainingSlots = role.getTotal() - alreadyAllocated;
+
+                for (int i = 0; i < remainingSlots; i++) {
+                    rolePool.add(type);
+                }
+            }
         }
 
-        if (!roles.get(RoleType.KNIGHT).isActive()) {
-            gameRole.remove(RoleType.KNIGHT);
-        }
+        Collections.shuffle(rolePool);
 
-        if (!roles.get(RoleType.FORTUNE).isActive()) {
-            gameRole.remove(RoleType.FORTUNE);
-        }
+        List<Player> gamePlayers = GameManager.getGameplayers();
 
-        if (!roles.get(RoleType.MEDIUM).isActive()) {
-            gameRole.remove(RoleType.MEDIUM);
-        }
+        int poolIndex = 0;
 
-        if (!roles.get(RoleType.VILLAGER).isActive()) {
-            gameRole.remove(RoleType.VILLAGER);
-        }
+        for (Player player : gamePlayers) {
+            UUID uuid = player.getUniqueId();
 
-        //観戦者役職はランダム設定役職で入らないため削除   市民は残りの人に振り分けるため削除
-        gameRole.remove(RoleType.SPECTATOR);
+            // 既にそのプレイヤーのロールが決まっていたらスキップ
+            if (playerRole.containsKey(uuid)) {
+                RoleType currentRole = playerRole.get(uuid);
+                player.sendMessage("§6あなたの役職は §l" + currentRole.roleJapanaseName + " §r§6です");
+                continue;
+            }
 
-        //役職を一旦シャッフル
-        Collections.shuffle(gameRole);
-
-
-        int playerCount = Event.players.size();
-
-
-        for (int i = 0; i < playerCount; i++) {
-
-            Player player = players.get(i);
-
-            //役職がもうないのに参加しようとしているプレイヤーがいればスペクテイターに
-            if (i >= gameRole.size()) {
-                playerRole.put(player.getUniqueId(), RoleType.SPECTATOR);
+            if (poolIndex >= rolePool.size()) {
+                playerRole.put(uuid, RoleType.SPECTATOR);
                 player.sendMessage(
                         Component.text("役職が満員のため観戦者となりました").color(NamedTextColor.GOLD)
                 );
-
                 continue;
-
             }
 
-
-            RoleType assignedRole = gameRole.get(i);
-
-            playerRole.put(player.getUniqueId(), assignedRole);
+            RoleType assignedRole = rolePool.get(poolIndex);
+            playerRole.put(uuid, assignedRole);
+            poolIndex++;
 
             player.sendMessage("§6あなたの役職は §l" + assignedRole.roleJapanaseName + " §r§6です");
-
-
         }
 
     }
@@ -318,4 +316,37 @@ public class RoleManager {
 
     }
 
+
+
+    // 指定した役職の最大人数に現在のplayerRole変数を参照して足りているかのチェック
+    public static boolean isRoleUnderstaffed(RoleType type) {
+
+        Role role = roles.get(type);
+        if (role == null) {
+            return false;
+        }
+        int maxTotal = role.getTotal();
+
+        long currentCount = playerRole.values().stream()
+                .filter(roleType -> roleType == type)
+                .count();
+
+        return currentCount < maxTotal;
+    }
+
+
+
+
+    // 指定した役職の最大人数を変更します
+    public static void setRole(RoleType roleType , int value){
+
+
+        Role targetRole = roles.get(roleType);
+
+        targetRole.setActive(true);
+        targetRole.setTotal(value);
+
+
+
+    }
 }

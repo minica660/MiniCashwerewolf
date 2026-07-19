@@ -115,26 +115,7 @@ public final class MiniCashWereWolf extends JavaPlugin {
     }
 
 
-    //役職名（日本語）チェック
-    public String numberposition(int pposition) {
-        String japosi = null;
-        if (pposition == 1) {
-            japosi = "人狼";
-        } else if (pposition == 2) {
-            japosi = "狂人";
-        } else if (pposition == 3) {
-            japosi = "騎士";
-        } else if (pposition == 4) {
-            japosi = "占い師";
-        } else if (pposition == 5) {
-            japosi = "霊媒師";
-        } else if (pposition == 6) {
-            japosi = "市民";
-        } else if (pposition == 100) {
-            japosi = "観戦者";
-        }
-        return japosi;
-    }
+
 
     //使用役職決定(役職人数設定)
     public String positionset(String positionch, int people) {

@@ -27,7 +27,7 @@ GUI
     ・人狼用の斧
 
 
-Villagershop MenuType使用
+
 
 
 ・人狼 1

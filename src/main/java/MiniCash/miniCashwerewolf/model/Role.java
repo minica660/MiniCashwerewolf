@@ -25,4 +25,14 @@ public class Role {
         return total;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+
+
 }

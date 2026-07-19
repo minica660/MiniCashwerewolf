@@ -5,6 +5,7 @@ import MiniCash.miniCashwerewolf.GameItem;
 import MiniCash.miniCashwerewolf.MiniCashWereWolf;
 import MiniCash.miniCashwerewolf.RoleManager;
 import MiniCash.miniCashwerewolf.GameManager;
+import MiniCash.miniCashwerewolf.model.Role;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -54,7 +55,7 @@ public class GameCommand implements BasicCommand {
 
         } else if (sub.equals("start")) {
 
-            RoleManager.roleset();   //ランダム役職設定メソッド呼び出し
+            RoleManager.randomPlayerRoleSet();   //ランダム役職設定メソッド呼び出し
 
             //ゲームがすでにスタートしていたら処理を停止
             if (gamePlaying){       //ゲーム実行中だったら処理を終了する（エラー防止）
@@ -93,57 +94,71 @@ public class GameCommand implements BasicCommand {
 
             //何をしたいかチェック
             String check = args[1];
+
             if (check.equals("set")){
                 if (args.length == 4) {
-                    String positionch = args[2];
+                    String roleName = args[2];
                     //役職人数を設定
                     String speople = args[3];
                     int people;
+
                     try {
                         people = Integer.parseInt(speople);
 
                     } catch (NumberFormatException e) {
-                        // 変換に失敗（数字以外の文字が入力された）した場合の処理
 
-                        // ユーザーにエラーメッセージを送信
                         sender.sendMessage("§c§l" + speople + "§r§cは有効な数字ではありません");
 
                         return ;
                     }
 
 
-                    //役職名が正しいかのチェック
-                    if (plugin.check(positionch)) {
-                        //メソッド呼び出し
-                        String returnmessage = plugin.positionset(positionch, people);
+                    for (RoleManager.RoleType roleType : RoleManager.RoleType.values()) {
 
-                        sender.sendMessage(returnmessage);
+                        if (roleType.name().equalsIgnoreCase(roleName)) {
 
+                            RoleManager.setRole(roleType, people);
+
+                            sender.sendMessage(MiniCashWereWolf.getMessage(roleType.getJapaneseName() + "の最大人数を " + people + "人に設定しました"));
+
+                            return;
+                        }
 
                     }
+
+
                 }else {
 
                     sender.sendMessage("§c役職の設定人数コマンドの入力方法を確認してください");
                     return;
 
                 }
+
             }else if (check.equals("check")){
-                String positionch = args[2];
-                if (plugin.check(positionch)) {
-                    String bsetcg = positionch + ".check";
-                    String isetcg = positionch + ".count";
-                    boolean bcheckconfig = plugin.getConfig().getBoolean(bsetcg);
-                    int scheckconfig = plugin.getConfig().getInt(isetcg);
+                String roleName = args[2];
 
-                    sender.sendMessage("========  §b現在の" + positionch + "人数  §r========");
-                    sender.sendMessage("            役職有無 : " + bcheckconfig);
-                    sender.sendMessage("         役職設定人数 : " + scheckconfig);
-                    sender.sendMessage("==============================");
+                try {
 
-                }else {
-                    sender.sendMessage("§c有効な役職名を入力してください");
-                    return ;
+                    RoleManager.RoleType roleType = RoleManager.RoleType.valueOf(roleName);
+
+                    Role role = RoleManager.getRoles().get(roleType);
+
+
+                        sender.sendMessage(MiniCashWereWolf.getMessage("========  §b現在の" + roleType.getJapaneseName() + "の情報  §r========"));
+                        sender.sendMessage(MiniCashWereWolf.getMessage("            役職有無 : " + role.isActive()));
+                        sender.sendMessage(MiniCashWereWolf.getMessage("         役職設定人数 : " + role.getTotal()));
+                        sender.sendMessage(MiniCashWereWolf.getMessage("=============================="));
+
+                        sender.sendMessage(MiniCashWereWolf.getMessage());
+
+
+
+                }catch (IllegalArgumentException e){
+                    sender.sendMessage(MiniCashWereWolf.getMessage(Component.text("有効な役職名を入力してください").color(NamedTextColor.RED)));
+                    return;
                 }
+
+
             }else if (check.equals("unset")){
 
                 String positionch = args[2];
