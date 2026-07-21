@@ -12,10 +12,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -149,8 +149,6 @@ public class GameCommand implements BasicCommand {
                         sender.sendMessage(MiniCashWereWolf.getMessage("         役職設定人数 : " + role.getTotal()));
                         sender.sendMessage(MiniCashWereWolf.getMessage("=============================="));
 
-                        sender.sendMessage(MiniCashWereWolf.getMessage());
-
 
 
                 }catch (IllegalArgumentException e){
@@ -161,20 +159,26 @@ public class GameCommand implements BasicCommand {
 
             }else if (check.equals("unset")){
 
-                String positionch = args[2];
-                if (plugin.check(positionch)) {
+                String roleName = args[2];
 
-                    //メソッド呼び出し
-                    String returnmessage = plugin.positionunset(positionch);
+                try {
 
-                    sender.sendMessage(returnmessage);
+                    RoleManager.RoleType roleType = RoleManager.RoleType.valueOf(roleName);
 
-                    //dbログ用にreturnmessageを編集
-                    String dbmessage = returnmessage.replaceAll("§.","");
 
-                } else {
+                    RoleManager.unsetRole(roleType);
+
+                    sender.sendMessage(
+                            MiniCashWereWolf.getMessage(Component.text("役職:" + roleType.getJapaneseName() + "を無効化しました").color(NamedTextColor.GREEN)
+                    ));
+
+
+
+                }catch (IllegalArgumentException e){
+                    sender.sendMessage(MiniCashWereWolf.getMessage(Component.text("有効な役職名を入力してください").color(NamedTextColor.RED)));
                     return;
                 }
+
 
             }
 
@@ -182,59 +186,97 @@ public class GameCommand implements BasicCommand {
 
         }else if (args[0].equals("player") && sender.hasPermission("minicashwerewolf.command.game.player")) {      //手動で自分の役職決定するよう(管理者向け)
 
-            if (args.length < 2){
-                sender.sendMessage("§4§l管理者用コマンド入力方法を確認してください");
-                return ;
-            }
+            if (args.length > 3) {
 
-            if (args[1].equals("set")) {
-                String positionargs = args[2];
 
-                plugin.playerset(player, positionargs);
+                String playerName = args[1];
 
-            }else if (args[1].equals("check")){
-
-                if (args.length < 3){
-                    sender.sendMessage("§c引数を確認してください");
-                    return;
-                }
-
-                String a2 = args[2];
-                String japosition;
-                OfflinePlayer target;
+                Player player;
                 try {
 
-                    target = Bukkit.getOfflinePlayer(a2);
-                    UUID id = target.getUniqueId();
+                    player = Bukkit.getPlayer(playerName);
 
-                    RoleManager.RoleType roleType =  RoleManager.getPlayerRole().getOrDefault(id, RoleManager.RoleType.NO);
-
-                    if (roleType == RoleManager.RoleType.NO) {
+                    if (player == null) {
                         sender.sendMessage(
-                                Component.text("§6§l現在" + target.getName() + "の役職はありません")
+                                MiniCashWereWolf.getMessage(
+                                        Component.text(playerName + "という名前のプレイヤーは不明です").color(NamedTextColor.RED)
+                                )
                         );
 
                         return;
                     }
 
-                    japosition = roleType.name();
+                } catch (Exception e) {
+                    sender.sendMessage(
+                            MiniCashWereWolf.getMessage(
+                                    Component.text(playerName + "という名前のプレイヤーは不明です").color(NamedTextColor.RED)
+                            )
+                    );
 
-                    sender.sendMessage("§6§l現在" + target.getName() + "の役職は§r" + japosition + "§§6です");
-
-
-                }catch (Exception e){
-                    sender.sendMessage("§cそのプレイヤーは現在オンラインではありません");
                     return;
+                }
+
+                if (args[2].equals("set")) {
+
+                    String roleName = args[3];
+
+
+                    try {
+
+                        RoleManager.RoleType roleType = RoleManager.RoleType.valueOf(roleName);
+
+
+                        RoleManager.setPlayerRole(player, roleType);
+
+                        sender.sendMessage(
+                                MiniCashWereWolf.getMessage(Component.text(player.getName() + "の役職を " + roleType.getJapaneseName() + "に変更しました").color(NamedTextColor.GREEN)
+                                ));
+
+                        return;
+
+
+                    } catch (IllegalArgumentException e) {
+                        sender.sendMessage(MiniCashWereWolf.getMessage(Component.text("有効な役職名を入力してください").color(NamedTextColor.RED)));
+                        return;
+                    }
+
+
+                } else if (args[2].equals("check")) {
+
+
+                    UUID uuid = player.getUniqueId();
+
+                    RoleManager.RoleType roleType = RoleManager.getPlayerRole().getOrDefault(uuid, RoleManager.RoleType.NO);
+
+                    if (roleType == RoleManager.RoleType.NO) {
+                        sender.sendMessage(
+                                MiniCashWereWolf.getMessage(
+                                        Component.text("§6§l現在" + player.getName() + "の役職はありません").color(NamedTextColor.RED)
+                                )
+                        );
+
+                        return;
+                    }
+
+                    sender.sendMessage(
+                            MiniCashWereWolf.getMessage(
+                                    Component.text("§6§l現在" + player.getName() + "の役職は§r" + roleType.getJapaneseName() + "§6です").color(NamedTextColor.AQUA)
+                            )
+                    );
+
+
+                    return;
+
+
                 }
 
                 return;
 
-
-
-
+            }else {
+                sender.sendMessage("§4§l管理者用コマンド入力方法を確認してください");
+                return ;
             }
 
-            return;
 
 
         }else if (args[0].equals("give") && sender.hasPermission("minicashwerewolf.command.game.give")){
@@ -245,23 +287,30 @@ public class GameCommand implements BasicCommand {
                     plugin.help(player);
                     return;
                 }
-                String itemname = args[1];
-
-                /*===================================
+                String itemNam = args[1];
 
 
+                ItemStack item = GameItem.createItem(itemNam,1);
 
-                    アイテム名として受け取った名前が実際に登録されているかをチェックする処理を追加必須
+                if (item == null) {
+                    player.sendMessage(
+                            MiniCashWereWolf.getMessage(
+                                    Component.text("アイテム名が不明です").color(NamedTextColor.RED)
+                            )
+                    );
 
+                    return;
+                }
 
-
-                 =========================================*/
-
-                player.getInventory().addItem(GameItem.createItem(itemname,1));
+                player.getInventory().addItem(item);
 
                 player.sendMessage(
-                        Component.text("§4" + player.getName() + "に「守りの盾」を付与しました")
+                        Component.text(
+                                itemNam + "を与えました"
+                        )
                 );
+
+
 
 
             }else {
@@ -274,11 +323,11 @@ public class GameCommand implements BasicCommand {
 
         } else if (args[0].equals("stop") && sender.hasPermission("minicashwerewolf.command.game.stop")) {
 
-            wolfmain.gstop(player);
+            wolfmain.commandGameStop(sender);
 
-            return ;
+            return;
 
-        } else if (args[0].equals("villagerspawn") && player.hasPermission("minicashwerewolf.command.game.villagerspawn")) {
+        } else if (args[0].equals("villager") && sender.hasPermission("minicashwerewolf.command.game.villagerspawn")) {
 
             if (commandSourceStack.getExecutor() instanceof Player player) {
 
@@ -293,11 +342,12 @@ public class GameCommand implements BasicCommand {
                         Component.text("このコマンドはプレイヤーのみ実行可能です").color(NamedTextColor.RED)
                 );
             }
+
             return;
 
-        } else {
+        }else {
 
-            plugin.help(player);
+            plugin.help(sender);
 
             return;
         }

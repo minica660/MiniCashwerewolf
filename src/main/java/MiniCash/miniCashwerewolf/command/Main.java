@@ -200,7 +200,7 @@ public class Main implements CommandExecutor {
             //DBlog追加
             databasemanager.addlog(player.getName(), String.valueOf(player.getUniqueId()),itemname + "を入手しようとコマンド実行");
         } else if (args[0].equals("stop") && player.hasPermission("minicashwerewolf.commands.stop")) {
-            wolfmain.gstop(player);
+            wolfmain.commandGameStop(player);
 
             //DBlog追加
             databasemanager.addlog(player.getName(), String.valueOf(player.getUniqueId()),"ゲーム停止コマンド実行");

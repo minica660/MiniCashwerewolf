@@ -200,6 +200,6 @@ public class GameItem {
             return smoke;
         }
 
-        return new ItemStack(Material.DIRT);
+        return null;
     }
 }

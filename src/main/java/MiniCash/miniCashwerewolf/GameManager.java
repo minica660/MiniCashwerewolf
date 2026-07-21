@@ -343,7 +343,7 @@ public class GameManager {
 
 
     //stopコマンド実装
-    public void gstop(Player player){
+    public void commandGameStop(CommandSender sender){
 
         if (gamePlaying) {
 
@@ -370,14 +370,18 @@ public class GameManager {
             }
 
 
-            player.sendMessage("§6§lゲームを停止させました！");
+            sender.sendMessage(
+                    MiniCashWereWolf.getMessage(
+                            Component.text("ゲームを終了させました").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)
+                    )
+            );
 
             gamestop();
 
 
 
         }else {
-            player.sendMessage("§c§l現在ゲームが進行中ではありません!\nゲームが進行中のみこのコマンドを実行できます");
+            sender.sendMessage("§c§l現在ゲームが進行中ではありません!\nゲームが進行中のみこのコマンドを実行できます");
         }
     }
 

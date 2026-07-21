@@ -334,6 +334,12 @@ public class RoleManager {
         return currentCount < maxTotal;
     }
 
+    // 指定したロールにプレイヤーのロールを変更しましす
+    public static void setPlayerRole(Player player, RoleType roleType) {
+
+        playerRole.put(player.getUniqueId(), roleType);
+
+    }
 
 
 
@@ -347,6 +353,13 @@ public class RoleManager {
         targetRole.setTotal(value);
 
 
+
+    }
+
+    // 指定した役職を無効化します
+    public static void unsetRole(RoleType roleType){
+        Role targetRole = roles.get(roleType);
+        targetRole.setActive(false);
 
     }
 }
