@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Villager {
-    private MiniCashWereWolf plugin = null;
+    private static MiniCashWereWolf plugin = null;
     public Villager(MiniCashWereWolf plugin){
-        this.plugin = plugin;
+        Villager.plugin = plugin;
     }
     //村人スポーン
-    public void villagerspawn(Player player, World world, Location location){
+    public static void villagerspawn(Player player, World world, Location location){
         NamespacedKey namekey = new NamespacedKey(plugin,"villagergui");
         String vid = "villager";
         org.bukkit.entity.Villager villager = (org.bukkit.entity.Villager) world.spawn(location, org.bukkit.entity.Villager.class);
@@ -55,7 +55,7 @@ public class Villager {
                     9999 // 使用回数（実質無限）
             );
             MerchantRecipe recipe2 = new MerchantRecipe(
-                    new ItemStack(plugin.createItem("pcheck",1)), //品物
+                    new ItemStack(GameItem.createItem("pcheck",1)), //品物
                     9999 // 使用回数（実質無限）
             );
             MerchantRecipe recipe3 = new MerchantRecipe(
@@ -63,28 +63,28 @@ public class Villager {
                     9999 // 使用回数（実質無限）
             );
             MerchantRecipe recipe4 = new MerchantRecipe(
-                    new ItemStack(plugin.createItem("glowing",1)), //品物
+                    new ItemStack(GameItem.createItem("glowing",1)), //品物
                     9999 // 使用回数（実質無限）
             );
             MerchantRecipe recipe5 = new MerchantRecipe(
-                    new ItemStack(plugin.createItem("speed",1)), //品物
+                    new ItemStack(GameItem.createItem("speed",1)), //品物
                     9999 // 使用回数（実質無限）
             );
             MerchantRecipe recipe6 = new MerchantRecipe(
-                    new ItemStack(plugin.createItem("invisibility",1)), //品物
+                    new ItemStack(GameItem.createItem("invisibility",1)), //品物
                     9999 // 使用回数（実質無限）
             );
             MerchantRecipe recipe7 = new MerchantRecipe(
-                    new ItemStack(plugin.createItem("smoke",1)), //品物
+                    new ItemStack(GameItem.createItem("smoke",1)), //品物
                     9999 // 使用回数（実質無限）
             );
 
 
 
-            ItemStack cost4 = plugin.createItem("coin",4);
-            ItemStack cost6 = plugin.createItem("coin",6);
-            ItemStack cost10 = plugin.createItem("coin",10);
-            ItemStack cost15 = plugin.createItem("coin",15);
+            ItemStack cost4 = GameItem.createItem("coin",4);
+            ItemStack cost6 = GameItem.createItem("coin",6);
+            ItemStack cost10 = GameItem.createItem("coin",10);
+            ItemStack cost15 = GameItem.createItem("coin",15);
 
 
 

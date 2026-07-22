@@ -1,5 +1,8 @@
 package MiniCash.miniCashwerewolf;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -23,16 +26,19 @@ public class GameItem {
 
     public static ItemStack createItem(String itemn , int amount){
 
+        ItemStack item = null;
+        ItemMeta itemMeta;
 
         NamespacedKey namekey = new NamespacedKey(plugin,"wolfitem");
         //人狼
         if (itemn.equals("wolf")){
 
-            ItemStack wolfitem = new ItemStack(Material.DIAMOND_AXE, 1);
+            item = new ItemStack(Material.DIAMOND_AXE, 1);
 
-            ItemMeta wolfitemmeta = wolfitem.getItemMeta();
-            wolfitemmeta.setDisplayName("§c人狼の斧");
-            wolfitemmeta.setUnbreakable(true);
+            itemMeta = item.getItemMeta();
+
+            itemMeta.itemName(Component.text("人狼の斧").color(NamedTextColor.RED));
+            itemMeta.setUnbreakable(true);
             NamespacedKey keytwo = new NamespacedKey(plugin, "no_damage");
 
             AttributeModifier modifier = new AttributeModifier(
@@ -40,166 +46,148 @@ public class GameItem {
                     -100.0,
                     AttributeModifier.Operation.ADD_NUMBER
             );
-            wolfitemmeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE,modifier);
-            wolfitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            wolfitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING,"wolf_item");
+            itemMeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE,modifier);
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GOLD)));
+            itemMeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING,"wolf_item");
 
 
-            wolfitem.setItemMeta(wolfitemmeta); //アイテムメタを設定
-
-            return  wolfitem;
+            item.setItemMeta(itemMeta); //アイテムメタを設定
 
 
-        }
+        }else if (itemn.equals("madman")) {
+            //狂人
+            item = new ItemStack(Material.ECHO_SHARD, 1);
 
-        //狂人
-        if (itemn.equals("madman")) {
-            ItemStack madmanitem = new ItemStack(Material.ECHO_SHARD, 1);
+            itemMeta = item.getItemMeta();
 
-            ItemMeta madmanitemeta = madmanitem.getItemMeta();
-            madmanitemeta.setDisplayName("§c§l味方を探せ！");
-            madmanitemeta.setLore(List.of("§6右クリックで使用可能"));
-            madmanitemeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "madman_item");
-
-
-            madmanitem.setItemMeta(madmanitemeta); //アイテムメタを設定
-
-            return madmanitem;
+            itemMeta.itemName(Component.text("味方を探せ！").color(NamedTextColor.RED).decorate(TextDecoration.BOLD));
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GOLD)));
+            itemMeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "madman_item");
 
 
-
-        }
-
-        //騎士
-        if (itemn.equals("knight")){
-            ItemStack knightitem = new ItemStack(Material.SHIELD, 1);
-
-            ItemMeta knightitemmeta = knightitem.getItemMeta();
-            knightitemmeta.setDisplayName("§c守りの盾");
-            knightitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            knightitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "knight_item");
+            item.setItemMeta(itemMeta); //アイテムメタを設定
 
 
-            knightitem.setItemMeta(knightitemmeta); //アイテムメタを設定
+        }else if (itemn.equals("knight")){
+            //騎士
 
-            return  knightitem;
+            item = new ItemStack(Material.SHIELD, 1);
 
+            itemMeta = item.getItemMeta();
 
-        }
-
-        //占い師
-        if (itemn.equals("fortunecheck")){
-
-            ItemStack fortuneitem = new ItemStack(Material.AMETHYST_SHARD, 1);
-
-            ItemMeta fortuneitemmeta = fortuneitem.getItemMeta();
-            fortuneitemmeta.setDisplayName("§5§l占い");
-            fortuneitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            fortuneitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "fortune_item");
+            itemMeta.itemName(Component.text("守りの盾").color(NamedTextColor.RED));
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GOLD)));
+            itemMeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "knight_item");
 
 
-            fortuneitem.setItemMeta(fortuneitemmeta); //アイテムメタを設定
-
-            return fortuneitem;
-
-        }
-
-        //霊媒師
-        if (itemn.equals("mediumcheck")){
-
-            ItemStack mediumitem = new ItemStack(Material.NETHER_STAR, 1);
-
-            ItemMeta mediumitemmeta = mediumitem.getItemMeta();
-            mediumitemmeta.setDisplayName("§5§l霊媒師用のアイテム");
-            mediumitemmeta.setLore(List.of("§6右クリックで使用可能"));
-            mediumitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "medium_item");
+            item.setItemMeta(itemMeta); //アイテムメタを設定
 
 
-            mediumitem.setItemMeta(mediumitemmeta); //アイテムメタを設定
+        }else if (itemn.equals("fortunecheck")){
 
-            return mediumitem;
+            //占い師
 
-        }
+            item = new ItemStack(Material.AMETHYST_SHARD, 1);
+
+            itemMeta = item.getItemMeta();
+
+            itemMeta.itemName(Component.text("占い").color(NamedTextColor.DARK_PURPLE).decorate(TextDecoration.BOLD));
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GOLD)));
+            itemMeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "fortune_item");
 
 
-        if (itemn.equals("pcheck")){
+            item.setItemMeta(itemMeta); //アイテムメタを設定
+
+
+        }else if (itemn.equals("mediumcheck")){
+
+            //霊媒師
+
+            item = new ItemStack(Material.NETHER_STAR, 1);
+
+            itemMeta = item.getItemMeta();
+
+            itemMeta.itemName(Component.text("霊媒師用のアイテム").color(NamedTextColor.DARK_PURPLE).decorate(TextDecoration.BOLD));
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GOLD)));
+            itemMeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "medium_item");
+
+
+            item.setItemMeta(itemMeta); //アイテムメタを設定
+
+
+        }else if (itemn.equals("pcheck")){
 
             //残り人数確認の書
-            ItemStack pcheckitem = new ItemStack(Material.LEATHER_HORSE_ARMOR);
-            ItemMeta pcheckitemmeta = pcheckitem.getItemMeta();
-            pcheckitemmeta.setDisplayName("§6残り人数確認の書");
-            pcheckitemmeta.setLore(List.of("§a右クリックで使用可能"));
-            pcheckitemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "people_check");
-            pcheckitem.setItemMeta(pcheckitemmeta); //アイテムメタを設定
+            item = new ItemStack(Material.LEATHER_HORSE_ARMOR);
 
-            return pcheckitem;
+            itemMeta = item.getItemMeta();
 
-        }
+            itemMeta.itemName(Component.text("残り人数確認の書").color(NamedTextColor.GOLD));
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GREEN)));
+            itemMeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "people_check");
+            item.setItemMeta(itemMeta); //アイテムメタを設定
 
-
-
-        if (itemn.equals("coin")) {
+        }else if (itemn.equals("coin")) {
             //コイン
-            ItemStack coin = new ItemStack(Material.GOLD_INGOT);
-            ItemMeta spawngolditemmeta = coin.getItemMeta();
-            spawngolditemmeta.setDisplayName("§6コイン");
-            spawngolditemmeta.setLore(List.of("§a人狼ゲーム専用コイン"));
-            spawngolditemmeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "spawn_gold_ingot");
-            coin.setItemMeta(spawngolditemmeta); //アイテムメタを設定
+            item = new ItemStack(Material.GOLD_INGOT);
 
+            itemMeta = item.getItemMeta();
 
-            return coin;
+            itemMeta.itemName(Component.text("コイン").color(NamedTextColor.GOLD));
+            itemMeta.lore(List.of(Component.text("人狼ゲーム専用コイン").color(NamedTextColor.GREEN)));
+            itemMeta.getPersistentDataContainer().set(namekey, PersistentDataType.STRING, "spawn_gold_ingot");
+            item.setItemMeta(itemMeta); //アイテムメタを設定
+
 
 
         }else if (itemn.equals("glowing")){
-            ItemStack glowingitem = new ItemStack(Material.GLOW_INK_SAC, amount);
-            ItemMeta glowingitemmeta = glowingitem.getItemMeta();
-            glowingitemmeta.setDisplayName("§e全員発光");
-            glowingitemmeta.setLore(List.of("§a右クリックで使用可能"));
-            glowingitemmeta.getPersistentDataContainer().set(namekey,PersistentDataType.STRING,"glowin_item");
-            glowingitem.setItemMeta(glowingitemmeta);
+            item = new ItemStack(Material.GLOW_INK_SAC, amount);
 
-            return glowingitem;
+            itemMeta = item.getItemMeta();
+
+            itemMeta.itemName(Component.text("全員発光").color(NamedTextColor.YELLOW));
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GREEN)));
+            itemMeta.getPersistentDataContainer().set(namekey,PersistentDataType.STRING,"glowin_item");
+            item.setItemMeta(itemMeta);
+
 
         }else if (itemn.equals("speed")) {
 
-            ItemStack potion = new ItemStack(Material.SPLASH_POTION);
-            PotionMeta potionmeta = (PotionMeta) potion.getItemMeta();
+            item = new ItemStack(Material.SPLASH_POTION);
+
+            PotionMeta potionmeta = (PotionMeta) item.getItemMeta();
             potionmeta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 2, 10), true);
 
 
-            potionmeta.setDisplayName("§b俊敏のポーション");
+            potionmeta.itemName(Component.text("俊敏のポーション").color(NamedTextColor.AQUA));
+            potionmeta.lore(null);
 
+            item.setItemMeta(potionmeta);
 
-            potion.setItemMeta(potionmeta);
-
-            return potion;
         } else if (itemn.equals("invisibility")) {
 
-            ItemStack invisibilitypotion = new ItemStack(Material.SPLASH_POTION);
-            PotionMeta potionmeta = (PotionMeta) invisibilitypotion.getItemMeta();
+            item = new ItemStack(Material.SPLASH_POTION);
+            PotionMeta potionmeta = (PotionMeta) item.getItemMeta();
             potionmeta.addCustomEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 15, 1),true);
 
 
-            potionmeta.setDisplayName("§l透明化のポーション");
+            potionmeta.itemName(Component.text("透明化のポーション").decorate(TextDecoration.BOLD));
+            potionmeta.lore(null);
 
+            item.setItemMeta(potionmeta);
 
-            invisibilitypotion.setItemMeta(potionmeta);
-
-            return invisibilitypotion;
 
         }else if (itemn.equals("smoke")){
-            ItemStack smoke = new ItemStack(Material.COAL);
-            ItemMeta smokeItemMeta = smoke.getItemMeta();
-            smokeItemMeta.setDisplayName("§6§l煙幕");
-            smokeItemMeta.setLore(List.of("§a右クリックで使用可能"));
-            smokeItemMeta.getPersistentDataContainer().set(namekey,PersistentDataType.STRING,"smoke_item");
+            item = new ItemStack(Material.COAL);
+            itemMeta = item.getItemMeta();
+            itemMeta.itemName(Component.text("煙幕").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
+            itemMeta.lore(List.of(Component.text("右クリックで使用可能").color(NamedTextColor.GREEN)));
+            itemMeta.getPersistentDataContainer().set(namekey,PersistentDataType.STRING,"smoke_item");
 
-            smoke.setItemMeta(smokeItemMeta);
+            item.setItemMeta(itemMeta);
 
-            return smoke;
         }
 
-        return null;
+        return item;
     }
 }

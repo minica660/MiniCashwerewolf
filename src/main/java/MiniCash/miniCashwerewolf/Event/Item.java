@@ -1,6 +1,7 @@
 package MiniCash.miniCashwerewolf.Event;
 
 import MiniCash.miniCashwerewolf.MiniCashWereWolf;
+import MiniCash.miniCashwerewolf.RoleManager;
 import MiniCash.miniCashwerewolf.gui.FortuneGuiHolder;
 import MiniCash.miniCashwerewolf.gui.KnightGuiHolder;
 import org.bukkit.*;
@@ -127,25 +128,27 @@ public class Item {
     //狂人専用アイテム
     // どういうアイテム？何の目的で作った？
     public static String madmanitem(Player player) {
-        String resturnm = "§9味方：§r§l";
+        StringBuilder resturnm = new StringBuilder("§9味方：§r§l");
 
         if (MiniCashWereWolf.gamePlaying) {
-            for (Player p : Bukkit.getOnlinePlayers()){
-            UUID uuid = p.getUniqueId();
-            int geti = position.getOrDefault(id, 0);
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                UUID uuid = p.getUniqueId();
+                RoleManager.RoleType roleType = RoleManager.getPlayerRole().getOrDefault(uuid, RoleManager.RoleType.NO);
 
-                if (geti == 1) {
+                if (roleType.equals(RoleManager.RoleType.WOLF)) {
                     String plus = p.getName() + "、";
-                    resturnm = resturnm + plus;
+                    resturnm.append(plus);
                 }
 
+
             }
+
         }else {
-            resturnm = "§c現在ゲームが進行中ではありません";
+            resturnm = new StringBuilder("§c現在ゲームが進行中ではありません");
         }
 
 
-        return resturnm;
+        return resturnm.toString();
 
     }
 

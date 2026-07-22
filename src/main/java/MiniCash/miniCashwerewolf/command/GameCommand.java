@@ -1,10 +1,7 @@
 package MiniCash.miniCashwerewolf.command;
 
+import MiniCash.miniCashwerewolf.*;
 import MiniCash.miniCashwerewolf.DB.DB;
-import MiniCash.miniCashwerewolf.GameItem;
-import MiniCash.miniCashwerewolf.MiniCashWereWolf;
-import MiniCash.miniCashwerewolf.RoleManager;
-import MiniCash.miniCashwerewolf.GameManager;
 import MiniCash.miniCashwerewolf.model.Role;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -76,9 +73,6 @@ public class GameCommand implements BasicCommand {
             //game_dataテーブルリセット
             databasemanager.cleanGameDataTABLES();
             plugin.getLogger().info("game_dataテーブルをリセットしました");
-
-            plugin.player();
-
 
 
             wolfmain.gameStart(sender);
@@ -334,7 +328,7 @@ public class GameCommand implements BasicCommand {
                 Location location = player.getLocation();
 
                 World world = player.getWorld();
-                cvillager.villagerspawn(player, world, location);
+                Villager.villagerspawn(player, world, location);
 
 
             }else {

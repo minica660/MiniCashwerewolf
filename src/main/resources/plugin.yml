@@ -3,15 +3,7 @@ version: '1.0-SNAPSHOT'
 main: MiniCash.miniCashwerewolf.MiniCashWereWolf
 api-version: '1.21'
 
-commands:
-  mwgame:
-    usage: /mwgame <引数>
-    desctiption: "人狼ゲームコマンド"
-    default: op
-    aliases:
-      - MiniCashwerewolfgame
 
-    permission: minicashwerewolf.commands
 
 
 permissions:
