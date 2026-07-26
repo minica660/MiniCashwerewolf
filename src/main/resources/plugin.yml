@@ -1,0 +1,31 @@
+name: MiniCashWereWolf
+version: '${version}'
+main: MiniCash.miniCashwerewolf.MiniCashWereWolf
+api-version: '1.21'
+
+
+
+
+permissions:
+  minicashwerewolf.*:
+    description: MiniCashwerewolfプラグインのすべてのアクションとコマンドの使用を許可します
+    default: false
+    children:
+      minicashwerewolf.commands.help: true
+      minicashwerewolf.commands.start: true
+      minicashwerewolf.commands.role: true
+      minicashwerewolf.commands.player: true
+      minicashwerewolf.commands.give: true
+      minicashwerewolf.commands.stop: true
+      minicashwerewolf.commands.villagerspawn: true
+
+  minicashwerewolf.commands:
+    default: false
+    children:
+      minicashwerewolf.commands.help: true
+      minicashwerewolf.commands.start: true
+      minicashwerewolf.commands.role: true
+      minicashwerewolf.commands.player: true
+      minicashwerewolf.commands.give: true
+      minicashwerewolf.commands.stop: true
+      minicashwerewolf.commands.villagerspawn: true

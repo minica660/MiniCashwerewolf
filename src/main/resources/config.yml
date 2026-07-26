@@ -1,0 +1,38 @@
+#MySQL関連
+mysql:
+  host: localhost
+  port: 3306
+  user: root
+  database: MiniCashwerewolf
+  password: pass
+
+
+
+#スタート地点の座標
+#world: ワールド名を記入
+startpoint:
+  world: world
+  x: 0
+  y: 0
+  z: 0
+
+#会議地点の座標
+#world: ワールド名を記入
+meetingpoint:
+  world: world
+  x: 0
+  y: 0
+  z: 0
+
+#範囲
+range: 0
+
+
+
+
+#ここから先は手動での変更禁止
+#ゲームが実行中かのチェック true or false     ※触らないでください
+gamePlaying: false
+
+
+
