@@ -1,0 +1,94 @@
+・観戦者以外は役職がないプレイヤーの場合kickされ役職有のゲーム参加者のみホワイトリスト追加とホワイトリストONの処理
+
+人狼ゲーム流れ：
+
+・ゲームスタート
+・昼スタート
+・昼終了
+・１日目だったらそのまま夜へ
+    ２日目以降なら会議(投票)へ
+・夜スタート
+・夜終了
+・昼に
+
+
+
+
+
+
+・スケルトンを倒すことによってコインを獲得することが可能
+
+・投票
+GUI
+　チャット欄に表示させ、クリックされたプレイヤー名をListに追加し、多かったプレイヤーを追放
+
+・shop
+販売内容：
+    ・人狼用の斧
+
+
+
+
+
+・人狼 1
+・狂人 2
+・騎士 3
+・占い師 4
+・霊媒師 5
+・村人 6
+
+
+・観戦者 100
+
+・最初の夜はアイテム再配布なし
+
+
+・やること
+
+    プレイヤーの墓のプレイヤーヘッドを削除
+
+
+
+
+
+・役職案：
+    吊り人   会議で吊られたら勝利
+    第三陣営
+
+
+
+
+
+
+
+・template
+    Bukkit.getLogger().info("[§aMiniCashwerewolf§r] §l");
+
+    //DBlog追加
+        databasemanager.addlog(player.getName(), String.valueOf(player.getUniqueId()),"内容");
+
+
+
+==================================================
+
+new BukkitRunnable() {
+    int timer = 10; // 10回（約5秒間）繰り返す
+
+    @Override
+    public void run() {
+        if (timer <= 0) {
+            this.cancel();
+            return;
+        }
+
+        // 煙を出す
+        loc.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 30, 1.0, 1.0, 1.0, 0.02);
+
+        // 範囲内のプレイヤーに効果
+        loc.getWorld().getNearbyEntities(loc, 3, 3, 3).stream()
+           .filter(e -> e instanceof Player)
+           .forEach(p -> ((Player)p).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1)));
+
+        timer--;
+    }
+}.runTaskTimer(plugin, 0L, 10L); // 10ティック（0.5秒）おきに実行
