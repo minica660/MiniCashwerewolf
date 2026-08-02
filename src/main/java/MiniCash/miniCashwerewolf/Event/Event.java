@@ -29,6 +29,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -618,6 +619,7 @@ public class Event implements Listener {
 
     @EventHandler
     public void clickblock(PlayerInteractEvent event) {
+
         Player player = event.getPlayer();
         if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
@@ -632,39 +634,51 @@ public class Event implements Listener {
                 String line3 = PlainTextComponentSerializer.plainText().serialize(allLines.get(2));
                 String line4 = PlainTextComponentSerializer.plainText().serialize(allLines.get(3));
 
-                if (line1.equals("§6[mwerewolf]") && line2.equals("§a右クリックで")
-                        && line3.equals("§a§l§n人狼ゲーム")
-                        && line4.equals("§aに参加")) {
+                if (line1.equals("[mwerewolf]") && line2.equals("右クリックで")
+                        && line3.equals("人狼ゲーム")
+                        && line4.equals("に参加")) {
 
                     //すでに登録していないかのチェック
                     if (GameManager.getGameplayers().contains(player)) {
-                        player.sendMessage("§cすでに人狼ゲームに登録しています！");
+                        player.sendMessage(MiniCashWereWolf.getMessage(
+                                Component.text("すでに人狼ゲームに登録しています!").color(NamedTextColor.RED)
+                        ));
                         return;
                     } else {
 
                         //ここからゲームに参加準備をした後の処理記述！
 
                         //参加したいプレイヤーをplayersListに入れる
-                        player.sendMessage("§a§l人狼ゲームに登録しました");
+                        player.sendMessage(MiniCashWereWolf.getMessage(
+                                Component.text("人狼ゲームに登録しました").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                        ));
                         GameManager.addGamePlayer(player);
 
                     }
 
-                }else if (line1.equals("§6[mwerewolf]") && line2.equals("§a右クリックで")
-                        && line3.equals("§6観戦者として登録")){
+                }else if (line1.equals("[mwerewolf]") && line2.equals("右クリックで")
+                        && line3.equals("観戦者として登録")){
                     //先に普通の登録をしていないかのチェック
                     if (GameManager.getGameplayers().contains(player)) {
-                        player.sendMessage("§cすでに人狼ゲームに登録しています！");
+
+                        player.sendMessage(MiniCashWereWolf.getMessage(
+                                Component.text("すでに人狼ゲームに登録しています!").color(NamedTextColor.RED)
+                        ));
+
                     }else {
 
-                        //これと同じ看板をクリックしたらそのプレイヤーを観戦者として登録
-                        UUID id = player.getUniqueId();
+                        //プレイヤーを観戦者として登録
                         RoleManager.playerRoleSet(player , RoleManager.RoleType.SPECTATOR);
-                        player.sendMessage("§a§l人狼ゲームに§6観戦者§a§lとして登録しました");
+                        player.sendMessage(MiniCashWereWolf.getMessage(
+                                Component.text("人狼ゲームに").color(NamedTextColor.GREEN)
+                                        .append(Component.text("観戦者").color(NamedTextColor.GOLD))
+                                        .append(Component.text("として登録しました").color(NamedTextColor.GREEN))
+                                        .decorate(TextDecoration.BOLD)
+                        ));
 
                     }
-                }else if (line1 .equals("§6[mwerewolf]") && line2.equals("§a右クリックで")
-                        && line3.equals("§c登録をキャンセル")){
+                }else if (line1 .equals("[mwerewolf]") && line2.equals("右クリックで")
+                        && line3.equals("登録をキャンセル")){
                         //登録キャンセル
                         //ゲームに登録又は、役職を設定しているのかをチェック
 
@@ -676,7 +690,9 @@ public class Event implements Listener {
                     }else {
 
                         //まだ登録していなかったら
-                        player.sendMessage("§cまだ人狼ゲームに登録していません！");
+                        player.sendMessage(MiniCashWereWolf.getMessage(
+                                Component.text("まだ人狼ゲームに登録していません！").color(NamedTextColor.RED)
+                        ));
 
                     }
 
@@ -688,6 +704,7 @@ public class Event implements Listener {
 
         }
     }
+
 
 
 

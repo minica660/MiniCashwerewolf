@@ -266,6 +266,38 @@ public class GameCommand implements BasicCommand {
                     return;
 
 
+                }else if (args[2].equals("unset")){
+
+                    if (MiniCashWereWolf.gamePlaying) {
+                        sender.sendMessage(
+                                MiniCashWereWolf.getMessage(
+                                        Component.text("ゲームが開始しているため" + player.getName() +"のゲーム参加を解除できませんでした").color(NamedTextColor.RED)
+                                )
+                        );
+
+                        return;
+                    }
+
+                    if (GameManager.getGameplayers().contains(player)) {
+
+
+
+                        sender.sendMessage(
+                                MiniCashWereWolf.getMessage(
+                                        Component.text(player.getName() + "のゲーム参加を取り消しました").color(NamedTextColor.YELLOW)
+                                )
+                        );
+
+                    }else {
+                        sender.sendMessage(
+                                MiniCashWereWolf.getMessage(
+                                        Component.text(player.getName() + "は現在ゲームに参加していません").color(NamedTextColor.RED)
+                                )
+                        );
+                    }
+
+                    return;
+
                 }
 
 
@@ -397,7 +429,7 @@ public class GameCommand implements BasicCommand {
 
             } else if (sub.equals("player")) {
 
-                suggestions.addAll(List.of("set", "check"));
+                suggestions.addAll(List.of("set", "check","unset"));
 
             }
             return filterSuggest(suggestions, args[2]);

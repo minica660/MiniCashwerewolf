@@ -73,7 +73,6 @@ public final class MiniCashWereWolf extends JavaPlugin {
         helpMessage.add("§2§lヘルプを表示§r§2/mwgame help");
 
 
-        getServer().getPluginManager().registerEvents(new Event(this,wolfmain),this);
 
     }
 
