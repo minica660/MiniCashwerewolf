@@ -580,35 +580,48 @@ public class Event implements Listener {
     @EventHandler
     public void SignChange(SignChangeEvent event) {
 
-        String line1 = PlainTextComponentSerializer.plainText().serialize(event.line(0));
-        String line2 = PlainTextComponentSerializer.plainText().serialize(event.line(1));
+        if (event.getBlock().getState() instanceof Sign sign) {
 
-        if (line1.equals("mwgame")) {
+            String line1 = PlainTextComponentSerializer.plainText().serialize(event.line(0));
+            String line2 = PlainTextComponentSerializer.plainText().serialize(event.line(1));
 
-            if (line2.equals("Join")) {
+            if (line1.equals("mwgame")) {
 
-                Component setline1 = Component.text("[mwerewolf]").color(NamedTextColor.GOLD);
-                Component setline2 = Component.text("右クリックで").color(NamedTextColor.GREEN);
-                Component setline3 = Component.text("人狼ゲーム").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD);
-                Component setline4 = Component.text("に参加").color(NamedTextColor.GREEN);
+                if (line2.equals("Join")) {
+
+                    Component setline1 = Component.text("[mwerewolf]").color(NamedTextColor.GOLD);
+                    Component setline2 = Component.text("右クリックで").color(NamedTextColor.GREEN);
+                    Component setline3 = Component.text("人狼ゲーム").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD);
+                    Component setline4 = Component.text("に参加").color(NamedTextColor.GREEN);
 
 
-                event.line(0,setline1);
-                event.line(1,setline2);
-                event.line(2,setline3);
-                event.line(3,setline4);
-            }else if (line2.equals("Spectator")) {
-                //観戦者用
+                    event.line(0, setline1);
+                    event.line(1, setline2);
+                    event.line(2, setline3);
+                    event.line(3, setline4);
 
-                event.line(0,Component.text("[mwerewolf]").color(NamedTextColor.GOLD));
-                event.line(1,Component.text("右クリックで").color(NamedTextColor.GREEN));
-                event.line(2,Component.text("観戦者として登録").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
-            }else if (line2.equals("Cancel")){
-                //登録キャンセル
-                event.line(0,Component.text("[mwerewolf]").color(NamedTextColor.GOLD));
-                event.line(1,Component.text("右クリックで").color(NamedTextColor.GREEN));
-                event.line(2,Component.text("登録をキャンセル").color(NamedTextColor.RED));
+                    sign.setWaxed(true);
+
+                } else if (line2.equals("Spectator")) {
+                    //観戦者用
+
+                    event.line(0, Component.text("[mwerewolf]").color(NamedTextColor.GOLD));
+                    event.line(1, Component.text("右クリックで").color(NamedTextColor.GREEN));
+                    event.line(2, Component.text("観戦者として登録").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
+
+                    sign.setWaxed(true);
+                } else if (line2.equals("Cancel")) {
+                    //登録キャンセル
+                    event.line(0, Component.text("[mwerewolf]").color(NamedTextColor.GOLD));
+                    event.line(1, Component.text("右クリックで").color(NamedTextColor.GREEN));
+                    event.line(2, Component.text("登録をキャンセル").color(NamedTextColor.RED));
+
+                    sign.setWaxed(true);
+
+                }
+
             }
+
 
         }
 
