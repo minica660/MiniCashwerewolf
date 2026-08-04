@@ -601,6 +601,8 @@ public class Event implements Listener {
                     event.line(3, setline4);
 
                     sign.setWaxed(true);
+                    sign.update();
+
 
                 } else if (line2.equals("Spectator")) {
                     //観戦者用
@@ -610,6 +612,8 @@ public class Event implements Listener {
                     event.line(2, Component.text("観戦者として登録").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
 
                     sign.setWaxed(true);
+                    sign.update();
+
                 } else if (line2.equals("Cancel")) {
                     //登録キャンセル
                     event.line(0, Component.text("[mwerewolf]").color(NamedTextColor.GOLD));
@@ -617,6 +621,7 @@ public class Event implements Listener {
                     event.line(2, Component.text("登録をキャンセル").color(NamedTextColor.RED));
 
                     sign.setWaxed(true);
+                    sign.update();
 
                 }
 
@@ -698,9 +703,13 @@ public class Event implements Listener {
                     if (GameManager.getGameplayers().contains(player)) {
 
                         GameManager.removeGamePlayer(player);
+                        RoleManager.getPlayerRole().remove(player.getUniqueId());
+
                         player.sendMessage("§b人狼ゲームの登録を解除しました");
 
                     }else {
+
+                        RoleManager.getPlayerRole().remove(player.getUniqueId());
 
                         //まだ登録していなかったら
                         player.sendMessage(MiniCashWereWolf.getMessage(
