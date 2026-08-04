@@ -298,9 +298,11 @@ public class GameCommand implements BasicCommand {
                         return;
                     }
 
-                    if (GameManager.getGameplayers().contains(player)) {
+                    if (GameManager.getGameplayers().contains(player) || RoleManager.playerHasGameRole(player.getUniqueId())) {
 
                         GameManager.removeGamePlayer(player);
+                        RoleManager.getPlayerRole().remove(player.getUniqueId());
+
 
                         sender.sendMessage(
                                 MiniCashWereWolf.getMessage(
@@ -308,17 +310,6 @@ public class GameCommand implements BasicCommand {
                                 )
                         );
 
-                        if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
-
-                            RoleManager.getPlayerRole().remove(player.getUniqueId());
-
-                            sender.sendMessage(
-                                    MiniCashWereWolf.getMessage(
-                                            Component.text(player.getName() + "の役職を初期化しました").color(NamedTextColor.YELLOW)
-                                    )
-                            );
-
-                        }
 
 
                     }else {
