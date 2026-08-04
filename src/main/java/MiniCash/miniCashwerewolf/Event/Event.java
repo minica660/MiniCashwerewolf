@@ -56,11 +56,11 @@ public class Event implements Listener {
         this.wolfmain = wolfMain;
     }
 
-    public Map<UUID,String> headpickupHeadName =new HashMap<>();
+    public Map<UUID, String> headpickupHeadName = new HashMap<>();
 
     //ゲーム実行中のホワイトリスト
     @EventHandler
-    public void playerLogin(PlayerLoginEvent event){
+    public void playerLogin(PlayerLoginEvent event) {
         if (gamePlaying) {
             if (Bukkit.hasWhitelist()) {
                 Player player = event.getPlayer();
@@ -91,7 +91,7 @@ public class Event implements Listener {
 
         InventoryHolder holder = event.getInventory().getHolder();
 
-        if(!(holder instanceof VoteGuiHolder ||  holder instanceof FortuneGuiHolder || holder instanceof KnightGuiHolder)) {
+        if (!(holder instanceof VoteGuiHolder || holder instanceof FortuneGuiHolder || holder instanceof KnightGuiHolder)) {
             return;
         }
 
@@ -131,7 +131,7 @@ public class Event implements Listener {
 
             Player target = Bukkit.getPlayer(nameVote);
 
-            if(target == null){
+            if (target == null) {
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(Component.text("ターゲットが不明です").color(NamedTextColor.RED))
                 );
@@ -162,7 +162,7 @@ public class Event implements Listener {
 
             Player target = Bukkit.getPlayer(nameVote);
 
-            if(target == null){
+            if (target == null) {
 
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(
@@ -184,17 +184,17 @@ public class Event implements Listener {
                 //黒陣営処理
                 message = "§4黒陣営";
 
-            }else if (targetRole.equals(RoleManager.RoleType.NO)) {
+            } else if (targetRole.equals(RoleManager.RoleType.NO)) {
 
                 message = "§b§k....§r";
 
-            }else {
+            } else {
                 //白陣営
                 message = "§b白陣営";
 
             }
 
-            player.sendMessage(  "§l" + target.getName() + "§rの役職は" +  message + " §r§lです");
+            player.sendMessage("§l" + target.getName() + "§rの役職は" + message + " §r§lです");
 
 
             player.closeInventory();
@@ -202,9 +202,6 @@ public class Event implements Listener {
 
         }
     }
-
-
-
 
 
     @EventHandler
@@ -221,19 +218,18 @@ public class Event implements Listener {
         String wolfItemValue = item.getPersistentDataContainer().get(namekey, PersistentDataType.STRING);
 
 
-
         if (item.getType() == Material.DIAMOND_AXE && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("wolf_item") && event.getAction() == Action.RIGHT_CLICK_AIR) {
             //人狼用の斧アイテム処理用メソッド呼び出し
             Player player = event.getPlayer();
             wolfItemSkill(player);
 
 
-        }else if (item.getType() == Material.ECHO_SHARD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("madman_item") && event.getAction() == Action.RIGHT_CLICK_AIR  ) {
+        } else if (item.getType() == Material.ECHO_SHARD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("madman_item") && event.getAction() == Action.RIGHT_CLICK_AIR) {
 
             //狂人アイテム
             Player player = event.getPlayer();
 
-            if (!MiniCashWereWolf.gamePlaying){
+            if (!MiniCashWereWolf.gamePlaying) {
 
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(
@@ -248,13 +244,12 @@ public class Event implements Listener {
             madmanItem(event.getPlayer());
 
 
-
-        }else if (item.getType() == Material.SHIELD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("knight_item") && event.getAction() == Action.RIGHT_CLICK_AIR  ||  item.getType() == Material.SHIELD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("knight_item") && event.getAction() == Action.RIGHT_CLICK_BLOCK  ) {
+        } else if (item.getType() == Material.SHIELD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("knight_item") && event.getAction() == Action.RIGHT_CLICK_AIR || item.getType() == Material.SHIELD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("knight_item") && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             //騎士アイテム
             Player player = event.getPlayer();
 
-            if (!MiniCashWereWolf.gamePlaying){
+            if (!MiniCashWereWolf.gamePlaying) {
 
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(
@@ -272,14 +267,12 @@ public class Event implements Listener {
             knightitem(player);
 
 
-
-
-        }else if ( item.getType() == Material.AMETHYST_SHARD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("fortune_item") && event.getAction() == Action.RIGHT_CLICK_AIR ) {
+        } else if (item.getType() == Material.AMETHYST_SHARD && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("fortune_item") && event.getAction() == Action.RIGHT_CLICK_AIR) {
             //占い師アイテム
             Player player = event.getPlayer();
 
 
-            if (!MiniCashWereWolf.gamePlaying){
+            if (!MiniCashWereWolf.gamePlaying) {
 
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(
@@ -295,12 +288,11 @@ public class Event implements Listener {
             fortuneItem(player);
 
 
-
-        }else if ( item.getType() == Material.NETHER_STAR && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("medium_item") && event.getAction() == Action.RIGHT_CLICK_AIR ) {
+        } else if (item.getType() == Material.NETHER_STAR && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("medium_item") && event.getAction() == Action.RIGHT_CLICK_AIR) {
             //霊媒師アイテム
             Player player = event.getPlayer();
 
-            if (!MiniCashWereWolf.gamePlaying){
+            if (!MiniCashWereWolf.gamePlaying) {
 
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(
@@ -312,7 +304,7 @@ public class Event implements Listener {
 
             event.getItem().setAmount(event.getItem().getAmount() - 1);
 
-            UUID  uuid = player.getUniqueId();
+            UUID uuid = player.getUniqueId();
             if (headpickupHeadName.containsKey(uuid)) {
 
                 String headname = headpickupHeadName.get(uuid);
@@ -322,7 +314,7 @@ public class Event implements Listener {
                     player.sendMessage(headname + "を占おうとしてるよ！");
                     Player target = Bukkit.getPlayer(headname);
 
-                    if(target == null){
+                    if (target == null) {
                         player.sendMessage(
                                 MiniCashWereWolf.getMessage(
                                         Component.text("ターゲットが不明です").color(NamedTextColor.RED)
@@ -340,32 +332,31 @@ public class Event implements Listener {
                     mainItem.setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
 
                     //霊媒結果
-                    if (targetRoleType.equals(RoleManager.RoleType.WOLF) ) {        //黒陣営処理
+                    if (targetRoleType.equals(RoleManager.RoleType.WOLF)) {        //黒陣営処理
                         message = "§4黒陣営";
-                    }else if (targetRoleType.equals(RoleManager.RoleType.NO)) {     //白陣営
+                    } else if (targetRoleType.equals(RoleManager.RoleType.NO)) {     //白陣営
                         message = "§b§k....§r";
-                    }else {
+                    } else {
                         message = "§b白陣営";
 
                     }
 
-                    player.sendMessage(  "§l" + target.getName() + "§rは" +  message + " §r§lでした");
+                    player.sendMessage("§l" + target.getName() + "§rは" + message + " §r§lでした");
 
 
                 }
 
 
-            }else {
+            } else {
                 event.getPlayer().sendMessage("§eプレイヤーの墓の付近でアイテムを使用してください!");
             }
 
 
-
-        }else if ( item.getType() == Material.LEATHER_HORSE_ARMOR && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("people_check") && event.getAction() == Action.RIGHT_CLICK_AIR ) {
+        } else if (item.getType() == Material.LEATHER_HORSE_ARMOR && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("people_check") && event.getAction() == Action.RIGHT_CLICK_AIR) {
 
             Player player = event.getPlayer();
 
-            if (!MiniCashWereWolf.gamePlaying){
+            if (!MiniCashWereWolf.gamePlaying) {
 
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(
@@ -380,11 +371,11 @@ public class Event implements Listener {
             peopleCheck(event.getPlayer());
 
 
-        } else if (item.getType() == Material.GLOW_INK_SAC && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("glowin_item") && event.getAction() == Action.RIGHT_CLICK_AIR ) {
+        } else if (item.getType() == Material.GLOW_INK_SAC && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("glowin_item") && event.getAction() == Action.RIGHT_CLICK_AIR) {
 
-            Player player =  event.getPlayer();
+            Player player = event.getPlayer();
 
-            if (!MiniCashWereWolf.gamePlaying){
+            if (!MiniCashWereWolf.gamePlaying) {
 
                 player.sendMessage(
                         MiniCashWereWolf.getMessage(
@@ -400,7 +391,7 @@ public class Event implements Listener {
             //itemの発光用メソッド呼び出し
             Item.glowing();
 
-        }else if (item.getType() == Material.COAL && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("smoke_item") && event.getAction() == Action.RIGHT_CLICK_AIR ) {
+        } else if (item.getType() == Material.COAL && item.getPersistentDataContainer().has(namekey) && wolfItemValue.equals("smoke_item") && event.getAction() == Action.RIGHT_CLICK_AIR) {
 
             //煙幕
             event.getItem().setAmount(event.getItem().getAmount() - 1);
@@ -412,7 +403,6 @@ public class Event implements Listener {
         }
 
     }
-
 
 
     @EventHandler
@@ -428,12 +418,10 @@ public class Event implements Listener {
     }
 
 
-
-
     @EventHandler
-    public void entityDeath(EntityDeathEvent event){
+    public void entityDeath(EntityDeathEvent event) {
 
-        NamespacedKey namekey = new NamespacedKey(plugin,"wolfitem");
+        NamespacedKey namekey = new NamespacedKey(plugin, "wolfitem");
 
         if (gamePlaying) {
 
@@ -464,8 +452,6 @@ public class Event implements Listener {
                 }
 
 
-
-
                 //死亡地点座標取得
                 Location location = event.getEntity().getLocation();
 
@@ -484,12 +470,8 @@ public class Event implements Listener {
                 location.getWorld().dropItem(location, playerhead);     //PlayerHeadスポーン
 
 
-
-
-
             }
         }
-
 
 
         if (event.getEntity() instanceof Skeleton) {
@@ -574,9 +556,6 @@ public class Event implements Listener {
     }
 
 
-
-
-
     @EventHandler
     public void SignChange(SignChangeEvent event) {
 
@@ -639,11 +618,11 @@ public class Event implements Listener {
     public void clickblock(PlayerInteractEvent event) {
 
         Player player = event.getPlayer();
-        if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             Block block = event.getClickedBlock();
 
-            if (block != null && block.getState() instanceof Sign sign){
+            if (block != null && block.getState() instanceof Sign sign) {
 
                 List<Component> allLines = sign.getSide(Side.FRONT).lines();
 
@@ -674,10 +653,10 @@ public class Event implements Listener {
 
                     }
 
-                }else if (line1.equals("[mwerewolf]") && line2.equals("右クリックで")
-                        && line3.equals("観戦者として登録")){
+                } else if (line1.equals("[mwerewolf]") && line2.equals("右クリックで")
+                        && line3.equals("観戦者として登録")) {
                     //先に普通の登録をしていないかのチェック
-                    if (GameManager.getGameplayers().contains(player)) {
+                    if (GameManager.getGameplayers().contains(player) || RoleManager.playerHasGameRole(player.getUniqueId())) {
 
                         player.sendMessage(MiniCashWereWolf.getMessage(
                                 Component.text("すでに人狼ゲームに登録しています!").color(NamedTextColor.RED)
@@ -686,7 +665,7 @@ public class Event implements Listener {
                     }else {
 
                         //プレイヤーを観戦者として登録
-                        RoleManager.playerRoleSet(player , RoleManager.RoleType.SPECTATOR);
+                        RoleManager.playerRoleSet(player, RoleManager.RoleType.SPECTATOR);
                         player.sendMessage(MiniCashWereWolf.getMessage(
                                 Component.text("人狼ゲームに").color(NamedTextColor.GREEN)
                                         .append(Component.text("観戦者").color(NamedTextColor.GOLD))
@@ -695,21 +674,21 @@ public class Event implements Listener {
                         ));
 
                     }
-                }else if (line1 .equals("[mwerewolf]") && line2.equals("右クリックで")
-                        && line3.equals("登録をキャンセル")){
-                        //登録キャンセル
-                        //ゲームに登録又は、役職を設定しているのかをチェック
 
-                    if (GameManager.getGameplayers().contains(player)) {
+                } else if (line1.equals("[mwerewolf]") && line2.equals("右クリックで")
+                        && line3.equals("登録をキャンセル")) {
+                    //登録キャンセル
+                    //ゲームに登録又は、役職を設定しているのかをチェック
+
+                    if (GameManager.getGameplayers().contains(player) || RoleManager.playerHasGameRole(player.getUniqueId())) {
 
                         GameManager.removeGamePlayer(player);
                         RoleManager.getPlayerRole().remove(player.getUniqueId());
 
                         player.sendMessage("§b人狼ゲームの登録を解除しました");
 
-                    }else {
+                    } else {
 
-                        RoleManager.getPlayerRole().remove(player.getUniqueId());
 
                         //まだ登録していなかったら
                         player.sendMessage(MiniCashWereWolf.getMessage(
@@ -723,21 +702,17 @@ public class Event implements Listener {
             }
 
 
-
         }
     }
-
-
 
 
     @EventHandler
     public void PlayerDeathEvent(PlayerDeathEvent event) {
 
-        if(MiniCashWereWolf.gamePlaying) {
+        if (MiniCashWereWolf.gamePlaying) {
             event.deathMessage(null);
         }
     }
-
 
 
 }
