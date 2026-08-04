@@ -221,6 +221,8 @@ public class GameCommand implements BasicCommand {
 
                             RoleManager.setPlayerRole(player, roleType);
 
+                            GameManager.addGamePlayer(player);
+
                             sender.sendMessage(
                                     MiniCashWereWolf.getMessage(Component.text(player.getName() + "の役職を " + roleType.getJapaneseName() + "に変更しました").color(NamedTextColor.GREEN)
                                     ));
@@ -248,15 +250,32 @@ public class GameCommand implements BasicCommand {
                     RoleManager.RoleType roleType = RoleManager.getPlayerRole().getOrDefault(uuid, RoleManager.RoleType.NO);
 
                     if (roleType == RoleManager.RoleType.NO) {
+
+                        String gameCheck = GameManager.getGameplayers().contains(player) ? "登録しています" : "登録していません";
+
+                        sender.sendMessage(
+                                MiniCashWereWolf.getMessage(
+                                        Component.text("現在" + player.getName() + "はゲームに" + gameCheck)
+                                )
+                        );
                         sender.sendMessage(
                                 MiniCashWereWolf.getMessage(
                                         Component.text("§6§l現在" + player.getName() + "の役職はありません").color(NamedTextColor.RED)
+
                                 )
                         );
+
 
                         return;
                     }
 
+                    String gameCheck = GameManager.getGameplayers().contains(player) ? "登録しています" : "登録していません";
+
+                    sender.sendMessage(
+                            MiniCashWereWolf.getMessage(
+                                    Component.text("現在" + player.getName() + "はゲームに" + gameCheck)
+                            )
+                    );
                     sender.sendMessage(
                             MiniCashWereWolf.getMessage(
                                     Component.text("§6§l現在" + player.getName() + "の役職は§r" + roleType.getJapaneseName() + "§6です").color(NamedTextColor.AQUA)
@@ -275,18 +294,32 @@ public class GameCommand implements BasicCommand {
                                 )
                         );
 
+
                         return;
                     }
 
                     if (GameManager.getGameplayers().contains(player)) {
 
-
+                        GameManager.removeGamePlayer(player);
 
                         sender.sendMessage(
                                 MiniCashWereWolf.getMessage(
                                         Component.text(player.getName() + "のゲーム参加を取り消しました").color(NamedTextColor.YELLOW)
                                 )
                         );
+
+                        if (RoleManager.getPlayerRole().containsKey(player.getUniqueId())) {
+
+                            RoleManager.getPlayerRole().remove(player.getUniqueId());
+
+                            sender.sendMessage(
+                                    MiniCashWereWolf.getMessage(
+                                            Component.text(player.getName() + "の役職を初期化しました").color(NamedTextColor.YELLOW)
+                                    )
+                            );
+
+                        }
+
 
                     }else {
                         sender.sendMessage(
