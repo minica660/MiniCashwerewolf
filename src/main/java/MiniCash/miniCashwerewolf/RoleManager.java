@@ -7,7 +7,9 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-
+/**
+ * 役職の設定を管理します
+ */
 public class RoleManager {
 
     private static Map<RoleType , Role> roles = new HashMap<>();    // 使用できるロール valueによりRoleModelを使用

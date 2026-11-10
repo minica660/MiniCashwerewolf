@@ -74,12 +74,27 @@ public class GameCommand implements BasicCommand {
 
 
             } else if (args[0].equals("role") && sender.hasPermission("minicashwerewolf.command.game.role")) {     //役職人数設定
+
                 if (args.length < 3) {
+
                     sender.sendMessage(
                             MiniCashWereWolf.getMessage(
-                                    Component.text("引数が足りません").color(NamedTextColor.RED)
+                                    Component.text("§2§l役職人数設定§r§2/mwgame role set <roleName> <人数>")
                             )
                     );
+                    sender.sendMessage(
+                            MiniCashWereWolf.getMessage(
+                                    Component.text("§2§l役職の無効化§r§2/mwgame role unset <roleName> <人数>")
+                            )
+                    );
+                    sender.sendMessage(
+                            MiniCashWereWolf.getMessage(
+                                    Component.text("§2§l役職人数チェック§r§2/mwgame role check <roleName>")
+                            )
+                    );
+
+
+
                     return;
                 }
 
@@ -87,6 +102,7 @@ public class GameCommand implements BasicCommand {
                 String check = args[1];
 
                 if (check.equals("set")) {
+
                     if (args.length == 4) {
                         String roleName = args[2];
                         //役職人数を設定
@@ -147,7 +163,7 @@ public class GameCommand implements BasicCommand {
                     }
 
 
-                } else if (check.equals("unset")) {
+                }else if (check.equals("unset")) {
 
                     String roleName = args[2];
 
@@ -221,7 +237,6 @@ public class GameCommand implements BasicCommand {
 
                             RoleManager.setPlayerRole(player, roleType);
 
-                            GameManager.addGamePlayer(player);
 
                             sender.sendMessage(
                                     MiniCashWereWolf.getMessage(Component.text(player.getName() + "の役職を " + roleType.getJapaneseName() + "に変更しました").color(NamedTextColor.GREEN)
