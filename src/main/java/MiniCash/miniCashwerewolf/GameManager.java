@@ -24,21 +24,22 @@ import static MiniCash.miniCashwerewolf.timer.Timer.*;
 import static MiniCash.miniCashwerewolf.timer.Timer.tstop;
 
 public class GameManager {
+
     private static MiniCashWereWolf plugin;
 
     // ゲームに参加する(している)プレイヤー保存
     // ゲーム開始前は参加しようとしているプレイヤー一覧
     // ゲーム開始後は観戦者を除いたゲームに参加しているプレイヤー
-    private static List<Player> gameplayers = new ArrayList<>();
+    private static final List<Player> gameplayers = new ArrayList<>();
 
     //各役職のプレイヤーが保存されている
-    private static List<Player> wolfs = new ArrayList<>(); //人狼定義
-    private static List<Player> madmans = new ArrayList<>();
-    private static List<Player> knights = new ArrayList<>();
-    private static List<Player> fortunes = new ArrayList<>();
-    private static List<Player> mediums = new ArrayList<>();
-    private static List<Player> villagers = new ArrayList<>();
-    private static List<Player> spectators = new ArrayList<>();
+    private static final List<Player> wolfs = new ArrayList<>(); //人狼定義
+    private static final List<Player> madmans = new ArrayList<>();
+    private static final List<Player> knights = new ArrayList<>();
+    private static final List<Player> fortunes = new ArrayList<>();
+    private static final List<Player> mediums = new ArrayList<>();
+    private static final List<Player> villagers = new ArrayList<>();
+    private static final List<Player> spectators = new ArrayList<>();
 
     private World gameWorld;
 

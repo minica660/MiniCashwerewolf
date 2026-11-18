@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import static MiniCash.miniCashwerewolf.MiniCashWereWolf.gamePlaying;
-import static MiniCash.miniCashwerewolf.GameManager.distributionItem;
 
 public class GameCommand implements BasicCommand {
     private MiniCashWereWolf plugin;
@@ -49,8 +48,6 @@ public class GameCommand implements BasicCommand {
 
             } else if (sub.equals("start")) {
 
-                RoleManager.randomPlayerRoleSet();   //ランダム役職設定メソッド呼び出し
-
                 //ゲームがすでにスタートしていたら処理を停止
                 if (gamePlaying) {       //ゲーム実行中だったら処理を終了する（エラー防止）
 
@@ -60,8 +57,11 @@ public class GameCommand implements BasicCommand {
 
                 }
 
+                RoleManager.randomPlayerRoleSet();   //ランダム役職設定メソッド呼び出し
+
+
                 //人数が等しくなかったら処理を止める
-                if (!RoleManager.playerCheck()) {
+                if (!RoleManager.rolePeopleCheck()) {
                     sender.sendMessage("§c§l設定人数に役職人数が達していないためゲームが開始できません");
                     return;
                 }
@@ -315,7 +315,7 @@ public class GameCommand implements BasicCommand {
 
                     if (GameManager.getGameplayers().contains(player) || RoleManager.playerHasGameRole(player.getUniqueId())) {
 
-                        GameManager.removeGamePlayer(player);
+                        RegisterManager.unregisterPlayer(player.getUniqueId());
                         RoleManager.getPlayerRole().remove(player.getUniqueId());
 
 

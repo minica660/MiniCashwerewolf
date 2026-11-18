@@ -12,8 +12,8 @@ import java.util.*;
  */
 public class RoleManager {
 
-    private static Map<RoleType , Role> roles = new HashMap<>();    // 使用できるロール valueによりRoleModelを使用
-    private static Map<UUID, RoleType> playerRole = new HashMap<>();
+    private static final Map<RoleType , Role> roles = new HashMap<>();    // 使用できるロール valueによりRoleModelを使用
+    private static final Map<UUID, RoleType> playerRole = new HashMap<>();
     public static List<RoleType> checklist = new ArrayList<>();     //役職が設定されているかのチェック用リスト
 
 
@@ -75,16 +75,16 @@ public class RoleManager {
         VILLAGER("villager","村人"),
         SPECTATOR("spectator","観戦者");
 
-        private String roleName;
-        private String roleJapanaseName;
-        RoleType(String roleName, String roleJapanaseName){
+        private final String roleName;
+        private final String roleJapaneseName;
+        RoleType(String roleName, String roleJapaneseName){
             this.roleName = roleName;
-            this.roleJapanaseName = roleJapanaseName;
+            this.roleJapaneseName = roleJapaneseName;
         }
 
 
         public String getJapaneseName() {
-            return roleJapanaseName;
+            return roleJapaneseName;
         }
 
         public String getRoleName() {
@@ -106,7 +106,7 @@ public class RoleManager {
 
     //役職設定人数分プレイヤーがいるかをチェック
     //いなかったらtrue,いたらfalse　を返します
-    public static boolean playerCheck(){
+    public static boolean rolePeopleCheck(){
 
         //変数
         int wolfTotal = 0;   //人狼実際の合計人数チェック
@@ -234,7 +234,7 @@ public class RoleManager {
             // 既にそのプレイヤーのロールが決まっていたらスキップ
             if (playerRole.containsKey(uuid)) {
                 RoleType currentRole = playerRole.get(uuid);
-                player.sendMessage("§6あなたの役職は §l" + currentRole.roleJapanaseName + " §r§6です");
+                player.sendMessage("§6あなたの役職は §l" + currentRole.roleJapaneseName + " §r§6です");
                 continue;
             }
 
@@ -250,7 +250,7 @@ public class RoleManager {
             playerRole.put(uuid, assignedRole);
             poolIndex++;
 
-            player.sendMessage("§6あなたの役職は §l" + assignedRole.roleJapanaseName + " §r§6です");
+            player.sendMessage("§6あなたの役職は §l" + assignedRole.roleJapaneseName + " §r§6です");
         }
 
     }
